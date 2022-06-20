@@ -50,20 +50,19 @@
 				window.alert("Only 1 file at a time please");
 				return;
 			}
-			node.setAttribute("data-name", "Loading please wait");
 			const reader = new FileReader();
 			reader.addEventListener("load", function() {
 				_parseText(reader.result, dropBox);
-				node.setAttribute("data-name", "Done");
+			});
+			reader.addEventListener("error", function() {
+				window.alert(reader.error.message);
 			});
 			reader.readAsText(droppedFiles[0]);
 		});
 		dropBox.addEventListener("paste", function(event) {
 			event.stopPropagation();
-			node.setAttribute("data-name", "Loading please wait");
 			const text = event.clipboardData.getData("text/plain");
 			_parseText(text, dropBox);
-			node.setAttribute("data-name", "Done");
 		});
 		node.appendChild(dropBox);
 	}
@@ -79,7 +78,84 @@
 		_parse(text);
 	}
 	
+	var _sym = {
+		DialogOpen : '"""',
+		DialogClose : '"""',
+		CodeOpen : "{",
+		CodeClose : "}",
+		Linebreak : "\n",
+		Separator : ":",
+		List : "-",
+		String : '"',
+		ConditionEnd : "?",
+		Else : "else",
+		ElseExp : ":", 
+		Set : "=",
+		Operators : ["==", ">=", "<=", ">", "<", "-", "+", "/", "*"], 
+	};	
+	
 	function _parse(text) {
+		const game = core.game.newGame();
+		var lines = text.split("\n");
+		var i = 0;
+		while (i < lines.length) {
+			var curLine = lines[i];
+
+			if (i == 0) {
+				var title;
+				i = _parseTitle(lines, i, game);
+			}
+			else {
+				i++;
+			}
+		}
+		core.ui.tree.addChild(game.title, "Game");
 	}
+	
+	function _parseTitle(lines, i, game) {
+		var results = _readDialogScript(lines,i);
+		game.title = results.script;
+		i = results.index;
+
+		i++;
+
+		return i;
+	}
+	
+	function _readDialogScript(lines, i) {
+		var scriptStr = "";
+		if (lines[i] === _sym.DialogOpen) {
+			scriptStr += lines[i] + "\n";
+			i++;
+			while(lines[i] != _sym.DialogClose) {
+				scriptStr += lines[i] + "\n";
+				i++;
+			}
+			scriptStr += lines[i];
+			i++;
+		}
+		else {
+			scriptStr += lines[i];
+			i++;
+		}
+		return { script:scriptStr, index:i };
+	}
+
+	function _setTitle(titleSrc) {
+		//dialog[titleDialogId] = { src:titleSrc, name:null };
+	}
+	
+	/*
+	TODO
+	
+	Add navigation to Tree. so that I can find the GamesList branch
+	
+	Add dialogs to Game so that I can set the title dialog as a dialog.
+	
+	Rework get title and set title to use the title dialog.
+	
+	*/
+	
+	
 })();
 
