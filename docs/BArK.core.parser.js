@@ -2,6 +2,7 @@
 	window.BArK = window.BArK || {};
 	BArK.core = BArK.core || {};
 	var core = BArK.core;
+	var gameCount = 0;
 	
 	core.parser = {};
 	
@@ -16,12 +17,12 @@
 	
 	core.parser.start = function() { 
 		core.ui.hooks.tree.attach(function(context) { 
-			if (context.getData("type") == "GameList") {
+			if (context.type == "GameList") {
 				core.ui.toolbox.addTool("Import Game", function(tool, node) {
 					_tool_import_game(tool, node);
 				});
-			} else if (context.getData("type") == "Module") {
-				if (context.getData("id") == core.parser.name) {
+			} else if (context.type == "Module") {
+				if (context.id == core.parser.name) {
 					return _viewer_parser;
 				}
 			}
@@ -95,7 +96,7 @@
 	};	
 	
 	function _parse(text) {
-		const game = core.game.newGame();
+		const game = core.game.game();
 		var lines = text.split("\n");
 		var i = 0;
 		while (i < lines.length) {
@@ -109,7 +110,7 @@
 				i++;
 			}
 		}
-		core.ui.tree.addChild(game.title, "Game");
+		core.ui.tree.find("Games").addChild(game.title, "Game", gameCount++);
 	}
 	
 	function _parseTitle(lines, i, game) {
@@ -147,8 +148,6 @@
 	
 	/*
 	TODO
-	
-	Add navigation to Tree. so that I can find the GamesList branch
 	
 	Add dialogs to Game so that I can set the title dialog as a dialog.
 	

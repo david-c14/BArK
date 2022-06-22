@@ -27,7 +27,7 @@
 		}
 		
 		core.ui.hooks.tree.attach(function(context) {
-			if (context.getData("type") == "BArK") {
+			if (context.type == "BArK") {
 				return _viewer_BArK;
 			}
 		});			

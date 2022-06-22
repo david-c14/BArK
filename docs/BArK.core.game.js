@@ -16,8 +16,8 @@
 	
 	core.game.start = function(){
 		core.ui.hooks.tree.attach(function(context) {
-			if (context.getData("type") == "Module") {
-				if (context.getData("id") == core.game.name) {
+			if (context.type == "Module") {
+				if (context.id == core.game.name) {
 					return _viewer_game;
 				}
 			};
@@ -28,18 +28,54 @@
 		node.innerText = "Core Game model";
 	};
 
-	core.game.newGame = function() {
+	core.game.game = function() {
 		var _title = "Write your game title here";
+		const _dialogs = dialogs();
+		
 		const game = {
 			get title() {
 				return _title;
 			},
+			
 			set title(title) {
 				_title = title;
 			},
+			
+			get dialogs() {
+				return _dialogs;
+			},
+			
 		};
 
 		return game;
+	};
+	
+	function dialogs() {
+		const _list = [];
+		
+		const _dialogs = {
+			add: function() {
+				const dialog = dialog();
+				_list.push(dialog);
+				return dialog;
+			},
+			
+			get count() {
+				return _list.length;
+			},
+			
+			dialog: function(index) {
+				return _list[index];
+			},
+		};
+		
+		return _dialogs;
+	};
+	
+	function dialog() {
+		const _dialog = {
+		};
+		return _dialog;
 	};
 	
 	
