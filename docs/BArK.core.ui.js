@@ -90,7 +90,7 @@
 					viewerFunction = current(context) || viewerFunction;
 				});
 				if (viewerFunction) {
-					viewerFunction(_viewer);
+					viewerFunction(_viewer, context);
 				}
 			}
 		};
@@ -179,6 +179,24 @@
 			
 			find: function(search) {
 				return _treeFind(_wrapper, search);
+			},
+			
+			open: function() {
+				node.querySelector("span.caret")?.classList.add("caret-down");
+				node.parentElement.classList.add("active");
+				if (_wrapper.parent != _wrapper.root) {
+					_wrapper.parent.open();
+				}
+			},
+			
+			openAndSelect: function() {
+				_wrapper.open();
+				_selectNode(_wrapper);
+			},
+			
+			close: function() {
+				node.querySelector("span").classList.remove("caret-down");
+				node.parentElement.classList.remove("active");
 			},
 		
 		};

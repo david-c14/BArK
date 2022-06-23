@@ -2,7 +2,6 @@
 	window.BArK = window.BArK || {};
 	BArK.core = BArK.core || {};
 	var core = BArK.core;
-	var gameCount = 0;
 	
 	core.parser = {};
 	
@@ -99,6 +98,12 @@
 		const game = core.game.game();
 		var lines = text.split("\n");
 		var i = 0;
+		const compatibilityFlags = {
+			convertSayToPrint : false,
+			combineEndingsWithDialog : false,
+			convertImplicitSpriteDialogIds : false,
+		};
+
 		while (i < lines.length) {
 			var curLine = lines[i];
 
@@ -106,16 +111,60 @@
 				var title;
 				i = _parseTitle(lines, i, game);
 			}
+			else if (curLine.length <= 0 || curLine.charAt(0) === "#") {
+				// collect version number (from a comment.. hacky I know)
+				if (curLine.indexOf("# BITSY VERSION ") != -1) {
+					game.versionNumber = parseFloat(curLine.replace("# BITSY VERSION ", ""));
+
+					if (game.versionNumber < 5.0) {
+						compatibilityFlags.convertSayToPrint = true;
+					}
+
+					if (game.versionNumber < 7.0) {
+						compatibilityFlags.combineEndingsWithDialog = true;
+						compatibilityFlags.convertImplicitSpriteDialogIds = true;
+					}
+				}
+
+				//skip blank lines & comments
+				i++;
+			}
+			else if (_getType(curLine) == "PAL") {
+				const results = _parsePalette(lines, i);
+				i = results.index;
+				const palette = game.palettes.add(results.id, results.name, results.colors);
+			}
 			else {
 				i++;
 			}
 		}
-		core.ui.tree.find("Games").addChild(game.title, "Game", gameCount++);
+		
+		const gameNode = core.ui.tree.find("Games").addChild(game.title, "Game", game.id);
+		gameNode.openAndSelect();
+		const dialogsNode = gameNode.addChild("Dialogs", "Dialogs", 0);
+		dialogsNode.addChild("title", "Dialog", "title");
+		const palettesNode = gameNode.addChild("Palettes", "Palettes", 0);
+		for(var i = 0; i < game.palettes.count; i++) {
+			palettesNode.addChild(game.palettes.palette(i).name, "Palette", game.palettes.palette(i).id);
+		}
+		
 	}
 	
+	function _getType(line) {
+		return _getArg(line,0);
+	}
+
+	function _getId(line) {
+		return _getArg(line,1);
+	}
+
+	function _getArg(line,arg) {
+		return line.split(" ")[arg];
+	}
+
 	function _parseTitle(lines, i, game) {
 		var results = _readDialogScript(lines,i);
-		game.title = results.script;
+		game.dialogs.add("title", results.script, null);
 		i = results.index;
 
 		i++;
@@ -141,20 +190,28 @@
 		}
 		return { script:scriptStr, index:i };
 	}
-
-	function _setTitle(titleSrc) {
-		//dialog[titleDialogId] = { src:titleSrc, name:null };
+	
+	function _parsePalette(lines,i) { //todo this has to go first right now :(
+		var id = _getId(lines[i]);
+		i++;
+		var colors = [];
+		var name = null;
+		while (i < lines.length && lines[i].length > 0) { //look for empty line
+			var args = lines[i].split(" ");
+			if (args[0] === "NAME") {
+				name = lines[i].split(/\s(.+)/)[1];
+			}
+			else {
+				var col = [];
+				lines[i].split(",").forEach(function(i) {
+					col.push(parseInt(i));
+				});
+				colors.push(col);
+			}
+			i++;
+		}
+		return { id: id, name: name, colors: colors, index:i };
 	}
-	
-	/*
-	TODO
-	
-	Add dialogs to Game so that I can set the title dialog as a dialog.
-	
-	Rework get title and set title to use the title dialog.
-	
-	*/
-	
 	
 })();
 
