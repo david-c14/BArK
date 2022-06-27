@@ -103,11 +103,6 @@
 		const game = core.game.game();
 		var lines = text.split("\n");
 		var i = 0;
-		const compatibilityFlags = {
-			convertSayToPrint : false,
-			combineEndingsWithDialog : false,
-			convertImplicitSpriteDialogIds : false,
-		};
 
 		while (i < lines.length) {
 			var curLine = lines[i];
@@ -120,39 +115,35 @@
 				// collect version number (from a comment.. hacky I know)
 				if (curLine.indexOf("# BITSY VERSION ") != -1) {
 					game.versionNumber = parseFloat(curLine.replace("# BITSY VERSION ", ""));
-
-					if (game.versionNumber < 5.0) {
-						compatibilityFlags.convertSayToPrint = true;
-					}
-
-					if (game.versionNumber < 7.0) {
-						compatibilityFlags.combineEndingsWithDialog = true;
-						compatibilityFlags.convertImplicitSpriteDialogIds = true;
-					}
 				}
 
 				//skip blank lines & comments
 				i++;
 			}
-			else if (_getType(curLine) == "PAL") {
+			else if (_getType(curLine) === "PAL") {
 				const results = _parsePalette(lines, i);
 				i = results.index;
 				game.palettes.add(results.id, results.name, results.colors);
 			}
-			else if (_getType(curLine) == "TIL") {
+			else if (_getType(curLine) === "TIL") {
 				const results = _parseTile(lines, i);
 				i = results.index;
 				game.tiles.add(results.tileData);
 			}
-			else if (_getType(curLine) == "SPR") {
+			else if (_getType(curLine) === "SPR") {
 				const results = _parseSprite(lines, i);
 				i = results.index;
 				game.sprites.add(results.spriteData);
 			}
-			else if (_getType(curLine) == "ITM") {
+			else if (_getType(curLine) === "ITM") {
 				const results = _parseItem(lines, i);
 				i = results.index;
 				game.items.add(results.itemData);
+			}
+			else if (_getType(curLine) === "ROOM") {
+				const results = _parseRoom(lines, i);
+				i = results.index;
+				game.rooms.add(results.roomData);
 			}
 			else {
 				i++;
@@ -179,6 +170,10 @@
 		for(var i = 0; i < game.items.count; i++) {
 			itemsNode.addChild(game.items.item(i).name || game.items.item(i).id, "Item", game.items.item(i).id);
 		}
+		const roomsNode = gameNode.addChild("Rooms", "Rooms", 0);
+		for(var i = 0; i < game.rooms.count; i++) {
+			roomsNode.addChild(game.rooms.room(i).name || game.rooms.room(i).id, "Room", game.rooms.room(i).id);
+		}
 	}
 	
 	function _getType(line) {
@@ -191,6 +186,10 @@
 
 	function _getArg(line,arg) {
 		return line.split(" ")[arg];
+	}
+
+	function _getCoord(line,arg) {
+		return _getArg(line,arg).split(",");
 	}
 
 	function _parseTitle(lines, i, game) {
@@ -424,7 +423,101 @@
 		}
 
 		return { frameList: frameList, index: i };
-	}
+	};
+	
+	function _parseRoom(lines, i) {
+		const id = _getId(lines[i]);
+		const roomData = {
+			id: 0,
+			tilemap: [],
+			ends: [],
+			exits: [],
+			items: [],
+			pal: null,
+			name: null,
+		};
+		i++;
+		
+		const end = i + _mapsize;
+		var y = 0;
+		for (; i < end; i++) {
+			roomData.tilemap.push( [] );
+			const lineSep = lines[i].split(",");
+			for (var x = 0; x < _mapsize; x++) {
+				roomData.tilemap[y].push(lineSep[x]);
+			}
+			y++;
+		}
+		
+		while (i < lines.length && lines[i].length > 0) { // look for empty line
+			if (_getType(lines[i]) === "ITM") {
+				const itemId = _getId(lines[i]);
+				const itemCoord = lines[i].split(" ")[2].split(",");
+				const item = {
+					id: itemId,
+					x: parseInt(itemCoord[0]),
+					y: parseInt(itemCoord[1]),
+				};
+				roomData.items.push(item);
+			}
+			else if (_getType(lines[i]) === "EXT") {
+				const exitArgs = lines[i].split(" ");
+				const exitCoords = exitArgs[1].split(",");
+				const destName = exitArgs[2];
+				const destCoords = exitArgs[3].split(",");
+				const exit = {
+					x: parseInt(exitCoords[0]),
+					y: parseInt(exitCoords[1]),
+					dest: {
+						room: destName,
+						x: parseInt(destCoords[0]),
+						y: parseInt(destCoords[1]),
+					},
+					transition_effect: null,
+					dlg: null,
+				};
+				
+				var exitArgIndex = 4;
+				while (exitArgIndex < exitArgs.length) {
+					if (exitArgs[exitArgIndex] == "FX") {
+						exit.transition_effect = exitArgs[exitArgIndex + 1];
+						exitArgIndex += 2;
+					}
+					else if (exitArgs[exitArgIndex] == "DLG") {
+						exit.dlg = exitArgs[exitArgIndex + 1];
+						exitArgIndex += 2;
+					}
+					else {
+						exitArgIndex += 1;
+					}
+				}
+				roomData.exits.push(exit);
+			}
+			else if (_getType(lines[i]) === "END") {
+				const endId = _getId(lines[i]);
+				const endCoords = _getCoord(lines[i], 2);
+				const end = {
+					id: endId,
+					x: parseInt(endCoords[0]),
+					y: parseInt(endCoords[1]),
+				};
+				
+				roomData.ends.push(end);
+			}
+			else if (_getType(lines[i]) === "PAL") {
+				roomData.pal = _getId(lines[i]);
+			}
+			else if (_getType(lines[i]) === "NAME") {
+				const name = lines[i].split(/\s(.+)/)[1];
+				roomData.name = name;
+			}
+			
+			i++;
+		}
+		
+		return { roomData: roomData, index: i };
+		
+	};
 
 
 	

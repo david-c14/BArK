@@ -45,6 +45,7 @@
 		const _tiles = tiles();
 		const _sprites = sprites();
 		const _items = items();
+		const _rooms = rooms();
 		const _id = gameCount++;
 		
 		const game = {
@@ -74,6 +75,10 @@
 			
 			get items() {
 				return _items;
+			},
+			
+			get rooms() {
+				return _rooms;
 			},
 			
 			get id() {
@@ -315,6 +320,48 @@
 		
 		return _item;
 	};
+	
+	function rooms(game) {
+		const _list = [];
+		const _game = game;
+		
+		const _rooms = {
+			add: function(roomData) {
+				const _room = room(roomData, game);
+				_list.push(_room);
+				return _room;
+			},
+			
+			get count() {
+				return _list.length;
+			},
+			
+			get game() {
+				return _game;
+			},
+			
+			room: function(index) {
+				return _listItem(_list, index);
+			},
+		};
+		
+		return _rooms;
+	}
+	
+	function room(roomData, game) {
+		const _game = game;
+		const _room = {
+			id: roomData.id,
+			name: roomData.name,
+			pal: roomData.pal,
+			ends: roomData.ends,
+			exits: roomData.exits,
+			items: roomData.items,
+			tilemap: roomData.tilemap,
+		};
+		
+		return _room;
+	}
 
 })();
 
