@@ -137,12 +137,22 @@
 			else if (_getType(curLine) == "PAL") {
 				const results = _parsePalette(lines, i);
 				i = results.index;
-				const palette = game.palettes.add(results.id, results.name, results.colors);
+				game.palettes.add(results.id, results.name, results.colors);
 			}
 			else if (_getType(curLine) == "TIL") {
 				const results = _parseTile(lines, i);
 				i = results.index;
-				const tile = game.tiles.add(results.tileData);
+				game.tiles.add(results.tileData);
+			}
+			else if (_getType(curLine) == "SPR") {
+				const results = _parseSprite(lines, i);
+				i = results.index;
+				game.sprites.add(results.spriteData);
+			}
+			else if (_getType(curLine) == "ITM") {
+				const results = _parseItem(lines, i);
+				i = results.index;
+				game.items.add(results.itemData);
 			}
 			else {
 				i++;
@@ -161,7 +171,14 @@
 		for(var i = 0; i < game.tiles.count; i++) {
 			tilesNode.addChild(game.tiles.tile(i).name || game.tiles.tile(i).id, "Tile", game.tiles.tile(i).id);
 		}
-		
+		const spritesNode = gameNode.addChild("Sprites", "Sprites", 0);
+		for(var i = 0; i < game.sprites.count; i++) {
+			spritesNode.addChild(game.sprites.sprite(i).name || game.sprites.sprite(i).id, "Sprite", game.sprites.sprite(i).id);
+		}
+		const itemsNode = gameNode.addChild("Items", "Items", 0);
+		for(var i = 0; i < game.items.count; i++) {
+			itemsNode.addChild(game.items.item(i).name || game.items.item(i).id, "Item", game.items.item(i).id);
+		}
 	}
 	
 	function _getType(line) {
@@ -239,19 +256,19 @@
 		
 		tileData.animation.frameCount = result.frameList.length;
 		tileData.animation.isAnimated = tileData.animation.frameCount > 1;
-		tileData.frameList = result.frameList;
+		tileData.animation.frameList = result.frameList;
 		
 		// read other properties
 		while (i < lines.length && lines[i].length > 0) { // look for empty line
 			if (_getType(lines[i]) === "COL") {
-				tileData.col = parseInt(getId(lines[i]));
+				tileData.col = parseInt(_getId(lines[i]));
 			}
 			else if (_getType(lines[i]) === "NAME") {
 				/* NAME */
 				tileData.name = lines[i].split(/\s(.+)/)[1];
 			}
 			else if (_getType(lines[i]) === "WAL") {
-				var wallArg = getArg(lines[i], 1);
+				var wallArg = _getArg(lines[i], 1);
 				if (wallArg === "true") {
 					tileData.isWall = true;
 				}
@@ -265,7 +282,84 @@
 
 		return { tileData: tileData, index: i };
 	}
+	
+	function _parseSprite(lines, i) {
+		const id = _getId(lines[i]);
+		const spriteData = _createDrawingData("SPR", id);
+		
+		i++;
+		
+		// read & store sprite image source
+		const result = _parseDrawingCore(lines, i);
+		i = result.index;
+		
+		spriteData.animation.frameCount = result.frameList.length;
+		spriteData.animation.isAnimated = spriteData.animation.frameCount > 1;
+		spriteData.animation.frameList = result.frameList;
+		
+		// read other properties
+		while (i < lines.length && lines[i].length > 0) { // look for empty line
+			if (_getType(lines[i]) === "COL") {
+				spriteData.col = parseInt(_getId(lines[i]));
+			}
+			else if (_getType(lines[i]) === "POS") {
+				const posArgs = lines[i].split(" ");
+				spriteData.room = posArgs[1];
+				const coordArgs = posArgs[2].split(",");
+				spriteData.x = parseInt(coordArgs[0]);
+				spriteData.y = parseInt(coordArgs[1]);
+			}
+			else if (_getType(lines[i]) === "DLG") {
+				spriteData.dlg = _getId(lines[i]);
+			}
+			else if (_getType(lines[i]) === "NAME") {
+				spriteData.name = lines[i].split(/\s(.+)/)[1];
+			}
+			else if (_getType(lines[i]) === "ITM") {
+				const itemId = _getId(lines[i]);
+				const itemCount = parseFloat(_getArg(lines[i], 2));
+				spriteData.inventory[itemId] = itemCount;
+			}
+			
+			i++;
+		};
+		
+		return { spriteData: spriteData, index: i };
+		
+	};
 
+	function _parseItem(lines, i) {
+		const id = _getId(lines[i]);
+		const itemData = _createDrawingData("ITM", id);
+		
+		i++;
+		
+		// read & store item image source
+		const result = _parseDrawingCore(lines, i);
+		i = result.index;
+		
+		itemData.animation.frameCount = result.frameList.length;
+		itemData.animation.isAnimated = itemData.animation.frameCount > 1;
+		itemData.animation.frameList = result.frameList;
+		
+		// read other properties
+		while (i < lines.length && lines[i].length > 0) { // look for empty line
+			if (_getType(lines[i]) === "COL") {
+				itemData.col = parseInt(_getId(lines[i]));
+			}
+			else if (_getType(lines[i]) === "DLG") {
+				itemData.dlg = _getId(lines[i]);
+			}
+			else if (_getType(lines[i]) === "NAME") {
+				itemData.name = lines[i].split(/\s(.+)/)[1];
+			}
+			
+			i++;
+		};
+		
+		return { itemData: itemData, index: i };
+		
+	};
 
 	function _createDrawingData(type, id) {
 

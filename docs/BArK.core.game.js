@@ -43,6 +43,8 @@
 		const _dialogs = dialogs();
 		const _palettes = palettes();
 		const _tiles = tiles();
+		const _sprites = sprites();
+		const _items = items();
 		const _id = gameCount++;
 		
 		const game = {
@@ -64,6 +66,14 @@
 			
 			get tiles() {
 				return _tiles;
+			},
+			
+			get sprites() {
+				return _sprites;
+			},
+			
+			get items() {
+				return _items;
 			},
 			
 			get id() {
@@ -203,19 +213,108 @@
 			id: tileData.id,
 			name: tileData.name,
 			color: tileData.col,
-			isAnimated: tileData.isAnimated,
-			frameList: tileData.frameList,
-			frameIndex: tileData.frameIndex,
-			frameCount: tileData.frameCount,
+			isAnimated: tileData.animation.isAnimated,
+			frameList: tileData.animation.frameList,
+			frameIndex: tileData.animation.frameIndex,
+			frameCount: tileData.animation.frameCount,
 			wall: tileData.wall,
 			get game() {
 				return _game;
 			},
-		}
+		};
 		
 		return _tile;
 	};
 	
+	function sprites(game) {
+		const _list = [];
+		const _game = game;
+		
+		const _sprites = {
+			add: function(spriteData) {
+				const _sprite = sprite(spriteData, game);
+				_list.push(_sprite);
+				return _sprite;
+			},
+			
+			get count() {
+				return _list.length;
+			},
+			
+			get game() {
+				return _game;
+			},
+			
+			sprite: function(index) {
+				return _listItem(_list, index);
+			},
+		};
+		
+		return _sprites;
+	};
+	
+	function sprite(spriteData, game) {
+		const _game = game;
+		const _sprite = {
+			id: spriteData.id,
+			name: spriteData.name,
+			color: spriteData.col,
+			isAnimated: spriteData.animation.isAnimated,
+			frameList: spriteData.animation.frameList,
+			frameIndex: spriteData.animation.frameIndex,
+			frameCount: spriteData.animation.frameCount,
+			room: spriteData.room,
+			x: spriteData.x,
+			y: spriteData.y,
+			inventory: spriteData.inventory,
+			dlg: spriteData.dlg,
+		};
+		
+		return _sprite;
+	};
+
+	function items(game) {
+		const _list = [];
+		const _game = game;
+		
+		const _items = {
+			add: function(itemData) {
+				const _item = item(itemData, game);
+				_list.push(_item);
+				return _item;
+			},
+			
+			get count() {
+				return _list.length;
+			},
+			
+			get game() {
+				return _game;
+			},
+			
+			item: function(index) {
+				return _listItem(_list, index);
+			},
+		};
+		
+		return _items;
+	};
+	
+	function item(itemData, game) {
+		const _game = game;
+		const _item = {
+			id: itemData.id,
+			name: itemData.name,
+			color: itemData.col,
+			isAnimated: itemData.animation.isAnimated,
+			frameList: itemData.animation.frameList,
+			frameIndex: itemData.animation.frameIndex,
+			frameCount: itemData.animation.frameCount,
+			dlg: itemData.dlg,
+		};
+		
+		return _item;
+	};
 
 })();
 
