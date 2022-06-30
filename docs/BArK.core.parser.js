@@ -145,6 +145,16 @@
 				i = results.index;
 				game.rooms.add(results.roomData);
 			}
+			else if (_getType(curLine) === "DLG") {
+				const results = _parseDialog(lines, i);
+				i = results.index;
+				game.dialogs.add(results.data.id, results.data.script, results.data.name);
+			}
+			else if (_getType(curLine) === "VAR") {
+				const results = _parseVariable(lines, i);
+				i = results.index;
+				game.variables.add(results.id, results.value);
+			}
 			else {
 				i++;
 			}
@@ -152,8 +162,6 @@
 		
 		const gameNode = core.ui.tree.find("Games").addChild(game.title, "Game", game.id);
 		gameNode.openAndSelect();
-		const dialogsNode = gameNode.addChild("Dialogs", "Dialogs", 0);
-		dialogsNode.addChild("title", "Dialog", "title");
 		const palettesNode = gameNode.addChild("Palettes", "Palettes", 0);
 		for(var i = 0; i < game.palettes.count; i++) {
 			palettesNode.addChild(game.palettes.palette(i).name, "Palette", game.palettes.palette(i).id);
@@ -172,7 +180,19 @@
 		}
 		const roomsNode = gameNode.addChild("Rooms", "Rooms", 0);
 		for(var i = 0; i < game.rooms.count; i++) {
-			roomsNode.addChild(game.rooms.room(i).name || game.rooms.room(i).id, "Room", game.rooms.room(i).id);
+			const roomNode = roomsNode.addChild(game.rooms.room(i).name || game.rooms.room(i).id, "Room", game.rooms.room(i).id);
+			const exitsNode = roomNode.addChild("Exits", "Exit", 0);
+			for(let j = 0; j < game.rooms.room(i).exits.count; j++) {
+				exitsNode.addChild(game.rooms.room(i).exits.exit(j).dest.room, "Exit", game.rooms.room(i).exits.exit(j).dest.room);
+			}
+		}
+		const dialogsNode = gameNode.addChild("Dialogs", "Dialogs", 0);
+		for(let i = 0; i < game.dialogs.count; i++) {
+			dialogsNode.addChild(game.dialogs.dialog(i).name || game.dialogs.dialog(i).id, "Dialog", game.dialogs.dialog(i).id);
+		}
+		const varsNode = gameNode.addChild("Variables", "Variables", 0);
+		for(let i = 0; i < game.variables.count; i++) {
+			varsNode.addChild(game.variables.variable(i).id, "Variable", game.variables.variable(i).id);
 		}
 	}
 	
@@ -200,25 +220,6 @@
 		i++;
 
 		return i;
-	}
-	
-	function _readDialogScript(lines, i) {
-		var scriptStr = "";
-		if (lines[i] === _sym.DialogOpen) {
-			scriptStr += lines[i] + "\n";
-			i++;
-			while(lines[i] != _sym.DialogClose) {
-				scriptStr += lines[i] + "\n";
-				i++;
-			}
-			scriptStr += lines[i];
-			i++;
-		}
-		else {
-			scriptStr += lines[i];
-			i++;
-		}
-		return { script:scriptStr, index:i };
 	}
 	
 	function _parsePalette(lines,i) { //todo this has to go first right now :(
@@ -518,8 +519,61 @@
 		return { roomData: roomData, index: i };
 		
 	};
-
-
+	
+	function _readDialogScript(lines, i) {
+		var scriptStr = "";
+		if (lines[i] === _sym.DialogOpen) {
+			scriptStr += lines[i] + "\n";
+			i++;
+			while(lines[i] != _sym.DialogClose) {
+				scriptStr += lines[i] + "\n";
+				i++;
+			}
+			scriptStr += lines[i];
+			i++;
+		}
+		else {
+			scriptStr += lines[i];
+			i++;
+		}
+		return { script:scriptStr, index:i };
+	}
+	
+	function _parseScript(lines, i) {
+		const id = _getId(lines[i]);
+		i++;
+		
+		const results = _readDialogScript(lines, i)
+		i = results.index;
+		
+		const dialogData = {
+			src: results.script,
+			name: null,
+			id: id,
+		};
+		
+		return {data: dialogData, index: i};
+	};
+	
+	function _parseDialog(lines, i) {
+		const results = _parseScript(lines, i);
+		i = results.index;
+		if (lines[i].length > 0 && _getType(lines[i]) === "NAME") {
+			results.data.name = lines[i].split(/\s(.+)/)[1];
+			i++;
+		}
+		results.index = i;
+		return results;
+		
+	};
+	
+	function _parseVariable(lines, i) {
+		const id = _getId(lines[i]);
+		i++;
+		const value = lines[i];
+		i++;
+		return { id: id, value: value, index: i };
+	};
 	
 })();
 

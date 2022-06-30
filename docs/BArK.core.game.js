@@ -46,6 +46,7 @@
 		const _sprites = sprites();
 		const _items = items();
 		const _rooms = rooms();
+		const _variables = variables();
 		const _id = gameCount++;
 		
 		const game = {
@@ -79,6 +80,10 @@
 			
 			get rooms() {
 				return _rooms;
+			},
+			
+			get variables() {
+				return _variables;
 			},
 			
 			get id() {
@@ -273,6 +278,9 @@
 			y: spriteData.y,
 			inventory: spriteData.inventory,
 			dlg: spriteData.dlg,
+			get game() {
+				return _game;
+			},
 		};
 		
 		return _sprite;
@@ -316,11 +324,57 @@
 			frameIndex: itemData.animation.frameIndex,
 			frameCount: itemData.animation.frameCount,
 			dlg: itemData.dlg,
+			get game() {
+				return _game;
+			},
 		};
 		
 		return _item;
 	};
 	
+	function exits(room) {
+		const _list = [];
+		const _room = room;
+		
+		const _exits = {
+			add: function(exitData) {
+				const _exit = exit(exitData, room);
+				_list.push(_exit);
+				return _exit;
+			},
+			
+			get count() {
+				return _list.length;
+			},
+			
+			get room() {
+				return _room;
+			},
+			
+			exit: function(index) {
+				return _listItem(_list, index);
+			},
+		};
+		
+		return _exits;
+	}
+	
+	function exit(exitData, room) {
+		const _room = room;
+		const _exit = {
+			x: exitData.x,
+			y: exitData.y,
+			dest: exitData.dest,
+			transition_effect: exitData.transition_effect,
+			dlg: exitData.dlg,
+			get room() {
+				return _room;
+			},
+		};
+		
+		return _exit;
+	}
+
 	function rooms(game) {
 		const _list = [];
 		const _game = game;
@@ -355,12 +409,61 @@
 			name: roomData.name,
 			pal: roomData.pal,
 			ends: roomData.ends,
-			exits: roomData.exits,
+			get exits() {
+				return _exits;
+			},
 			items: roomData.items,
 			tilemap: roomData.tilemap,
+			get game() {
+				return _game;
+			},
 		};
+		const _exits = exits(_room);
+		for (let i = 0; i < roomData.exits.length; i++) {
+			_exits.add(roomData.exits[i])
+		}
 		
 		return _room;
+	}
+	
+	function variables(game) {
+		const _list = [];
+		const _game = game;
+		
+		const _variables = {
+			add: function(id, value) {
+				const _variable = variable(id, value, game);
+				_list.push(_variable);
+				return _variable;
+			},
+			
+			get count() {
+				return _list.length;
+			},
+			
+			get game() {
+				return _game;
+			},
+			
+			variable: function(index) {
+				return _listItem(_list, index);
+			},
+		};
+		
+		return _variables;
+	}
+	
+	function variable(id, value, game) {
+		const _game = game;
+		const _variable = {
+			id: id,
+			value: value,
+			get game() {
+				return _game;
+			},
+		};
+		
+		return _variable;
 	}
 
 })();
