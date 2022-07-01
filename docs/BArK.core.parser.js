@@ -180,10 +180,15 @@
 		}
 		const roomsNode = gameNode.addChild("Rooms", "Rooms", 0);
 		for(var i = 0; i < game.rooms.count; i++) {
-			const roomNode = roomsNode.addChild(game.rooms.room(i).name || game.rooms.room(i).id, "Room", game.rooms.room(i).id);
+			const room = game.rooms.room(i);
+			const roomNode = roomsNode.addChild(room.name || room.id, "Room", room.id);
 			const exitsNode = roomNode.addChild("Exits", "Exit", 0);
-			for(let j = 0; j < game.rooms.room(i).exits.count; j++) {
-				exitsNode.addChild(game.rooms.room(i).exits.exit(j).dest.room, "Exit", game.rooms.room(i).exits.exit(j).dest.room);
+			for(let j = 0; j < room.exits.count; j++) {
+				exitsNode.addChild(room.exits.exit(j).label, "Exit", room.exits.exit(j).id);
+			}
+			const endsNode = roomNode.addChild("Endings", "Endings", 0);
+			for(let j = 0; j < room.ends.count; j++) {
+				endsNode.addChild(room.ends.end(j).label, "Ending", room.ends.end(j).id);
 			}
 		}
 		const dialogsNode = gameNode.addChild("Dialogs", "Dialogs", 0);

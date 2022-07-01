@@ -335,10 +335,11 @@
 	function exits(room) {
 		const _list = [];
 		const _room = room;
+		var _idGen = 0;
 		
 		const _exits = {
 			add: function(exitData) {
-				const _exit = exit(exitData, room);
+				const _exit = exit(exitData, room, _idGen++);
 				_list.push(_exit);
 				return _exit;
 			},
@@ -359,9 +360,10 @@
 		return _exits;
 	}
 	
-	function exit(exitData, room) {
+	function exit(exitData, room, id) {
 		const _room = room;
 		const _exit = {
+			id: id,
 			x: exitData.x,
 			y: exitData.y,
 			dest: exitData.dest,
@@ -370,9 +372,59 @@
 			get room() {
 				return _room;
 			},
+			get label() {
+				return _exit.id + " (" + _exit.x + "," + _exit.y + ")";
+			},
 		};
 		
 		return _exit;
+	}
+	
+	function ends(room) {
+		const _list = [];
+		const _room = room;
+		var _idGen = 0;
+		
+		const _ends = {
+			add: function(endData) {
+				const _end = end(endData, room, _idGen++);
+				_list.push(_end);
+				return _end;
+			},
+			
+			get count() {
+				return _list.length;
+			},
+			
+			get room() {
+				return _room;
+			},
+			
+			end: function(index) {
+				return _listItem(_list, index);
+			},
+			
+		};
+		
+		return _ends;
+	}
+	
+	function end(endData, room, id) {
+		const _room = room;
+		const _end = {
+			id: id,
+			dlg: endData.id,
+			x: endData.x,
+			y: endData.y,
+			get room() {
+				return _room;
+			},
+			get label() {
+				return _end.id + " (" + _end.x + "," + _end.y + ")";
+			},
+		};
+		
+		return _end;
 	}
 
 	function rooms(game) {
@@ -408,7 +460,9 @@
 			id: roomData.id,
 			name: roomData.name,
 			pal: roomData.pal,
-			ends: roomData.ends,
+			get ends() {
+				return _ends;
+			},
 			get exits() {
 				return _exits;
 			},
@@ -421,6 +475,10 @@
 		const _exits = exits(_room);
 		for (let i = 0; i < roomData.exits.length; i++) {
 			_exits.add(roomData.exits[i])
+		}
+		const _ends = ends(_room);
+		for (let i = 0; i < roomData.ends.length; i++) {
+			_ends.add(roomData.ends[i]);
 		}
 		
 		return _room;
