@@ -32,13 +32,15 @@
 	};
 	
 	function _viewer_game(node, context) {
-		const game = games[context.id];
+		const game = _games[context.id];
 		node.innerHTML = game.title + "<br />Version: " + game.versionNumber;
 	}
 	
-	const games = [];
+	const _games = [];
 	var gameCount = 0;
-
+	
+	core.game.games = _games;
+	
 	core.game.game = function() {
 		const _dialogs = dialogs();
 		const _palettes = palettes();
@@ -93,7 +95,7 @@
 			versionNumber: 0,
 			
 		};
-		games.push(game);
+		_games.push(game);
 		return game;
 	};
 	

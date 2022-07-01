@@ -27,7 +27,7 @@ html {
 }
 
 #BArK_container > div > * {
-	width: 300px;
+	min-width: 300px;
 	border: solid 1px black;
 	min-height: 40px;
 	margin: 10px;

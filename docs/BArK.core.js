@@ -2,6 +2,7 @@
 	window.BArK = window.BArK || {};
 	BArK.core = BArK.core || {};
 	var core = BArK.core;
+
 	core.start = function() {
 		
 		var modules = BArK.modules = BArK.modules || {};
@@ -32,7 +33,7 @@
 			}
 		});			
 	};
-	
+
 	function _viewer_BArK(node) {
 		node.innerText = "BArK"
 	};
