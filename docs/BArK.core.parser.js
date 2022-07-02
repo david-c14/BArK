@@ -100,7 +100,7 @@
 	const _height = _mapsize * _tilesize;	
 	
 	function _parse(text) {
-		const game = core.game.game();
+		const game = core.game.games.add();
 		var lines = text.split("\n");
 		var i = 0;
 

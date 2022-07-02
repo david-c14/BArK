@@ -32,16 +32,33 @@
 	};
 	
 	function _viewer_game(node, context) {
-		const game = _games[context.id];
-		node.innerHTML = game.title + "<br />Version: " + game.versionNumber;
+		const _game = core.game.games.game(context.id);
+		node.innerHTML = _game.title + "<br />Version: " + _game.versionNumber;
 	}
 	
-	const _games = [];
-	var gameCount = 0;
+	core.game.games = games();
 	
-	core.game.games = _games;
+	function games() {
+		const _list = [];
+		var _gameCount = 0;
+		
+		const _games = {
+			add: function() {
+				const _game = game("" + _gameCount++);
+				_list.push(_game);
+				return _game;
+			},
+			get count() {
+				return _list.length;
+			},
+			game: function(index) {
+				return _listItem(_list, index);
+			},
+		};
+		return _games;
+	}
 	
-	core.game.game = function() {
+	function game(id) {
 		const _dialogs = dialogs();
 		const _palettes = palettes();
 		const _tiles = tiles();
@@ -49,9 +66,9 @@
 		const _items = items();
 		const _rooms = rooms();
 		const _variables = variables();
-		const _id = gameCount++;
+		const _id = id;
 		
-		const game = {
+		const _game = {
 			get title() {
 				return _dialogs.dialog("title").src;
 			},
@@ -95,8 +112,7 @@
 			versionNumber: 0,
 			
 		};
-		_games.push(game);
-		return game;
+		return _game;
 	};
 	
 	function _listItem(list, index) {
