@@ -148,7 +148,7 @@
 			else if (_getType(curLine) === "DLG") {
 				const results = _parseDialog(lines, i);
 				i = results.index;
-				game.dialogs.add(results.data.id, results.data.script, results.data.name);
+				game.dialogs.add(results.data.id, results.data.src, results.data.name);
 			}
 			else if (_getType(curLine) === "VAR") {
 				const results = _parseVariable(lines, i);
@@ -434,7 +434,7 @@
 	function _parseRoom(lines, i) {
 		const id = _getId(lines[i]);
 		const roomData = {
-			id: 0,
+			id: id,
 			tilemap: [],
 			ends: [],
 			exits: [],

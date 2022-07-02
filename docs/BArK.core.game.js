@@ -229,7 +229,7 @@
 			frameList: tileData.animation.frameList,
 			frameIndex: tileData.animation.frameIndex,
 			frameCount: tileData.animation.frameCount,
-			wall: tileData.wall,
+			wall: tileData.isWall,
 			get game() {
 				return _game;
 			},
@@ -428,7 +428,7 @@
 		
 		return _end;
 	}
-
+	
 	function rooms(game) {
 		const _list = [];
 		const _game = game;
