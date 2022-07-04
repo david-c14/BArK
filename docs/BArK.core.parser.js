@@ -155,6 +155,17 @@
 				i = results.index;
 				game.variables.add(results.id, results.value);
 			}
+			else if (_getType(curLine) === "DEFAULT_FONT") {
+				game.defaultFont = _getArg(lines[i++], 1);
+			}
+			else if (_getType(curLine) === "TEXT_DIRECTION") {
+				game.textDirection = _getArg(lines[i++], 1);
+			}
+			else if (_getType(curLine) === "FONT") {
+				const results = _parseFont(lines, i);
+				i = results.index;
+				game.fonts.add(results.id, results.data);
+			}
 			else {
 				i++;
 			}
@@ -198,6 +209,10 @@
 		const varsNode = gameNode.addChild("Variables", "Variables", 0);
 		for(let i = 0; i < game.variables.count; i++) {
 			varsNode.addChild(game.variables.variable(i).id, "Variable", game.variables.variable(i).id);
+		}
+		const fontsNode = gameNode.addChild("Fonts", "Fonts", 0);
+		for(let i = 0; i < game.fonts.count; i++) {
+			fontsNode.addChild(game.fonts.font(i).id, "Font", game.fonts.font(i).id);
 		}
 	}
 	
@@ -578,6 +593,19 @@
 		const value = lines[i];
 		i++;
 		return { id: id, value: value, index: i };
+	};
+	
+	function _parseFont(lines, i) {
+		const localFontName = _getId(lines[i]);
+		var localFontData = lines[i];
+		i++;
+		
+		while (i < lines.length && lines[i] != "") {
+			localFontData += "\n" + lines[i];
+			i++;
+		}
+		
+		return {id: localFontName, data: localFontData, index: i};
 	};
 	
 })();

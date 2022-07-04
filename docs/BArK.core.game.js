@@ -66,6 +66,7 @@
 		const _items = items();
 		const _rooms = rooms();
 		const _variables = variables();
+		const _fonts = fonts();
 		const _id = id;
 		
 		const _game = {
@@ -76,7 +77,7 @@
 			set title(title) {
 				_dialogs.dialog("title").src = title;
 			},
-			
+
 			get dialogs() {
 				return _dialogs;
 			},
@@ -105,11 +106,18 @@
 				return _variables;
 			},
 			
+			get fonts() {
+				return _fonts;
+			},
+			
 			get id() {
 				return _id;
 			},
 			
 			versionNumber: 0,
+			defaultFont: null,
+			textDirection: null,
+			fontData: null,
 			
 		};
 		return _game;
@@ -540,6 +548,46 @@
 		};
 		
 		return _variable;
+	}
+	
+	function fonts(game) {
+		const _list = [];
+		const _game = game;
+		
+		const _fonts = {
+			add: function(id, data) {
+				const _font = font(id, data, game);
+				_list.push(_font);
+				return _font;
+			},
+			
+			get count() {
+				return _list.length;
+			},
+			
+			get game() {
+				return _game;
+			},
+			
+			font: function(index) {
+				return _listItem(_list, index);
+			},
+		};
+		
+		return _fonts;
+	}
+	
+	function font(id, data, game) {
+		const _game = game;
+		const _font = {
+			id: id,
+			data: data,
+			get game() {
+				return _game;
+			},
+		};
+		
+		return _font;
 	}
 
 })();
