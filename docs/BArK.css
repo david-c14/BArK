@@ -34,7 +34,7 @@ html {
 }
 
 #BArK_container > div + div > * {
-	min-width: 600px;
+	min-width: 450px;
 }
 
 #BArK_tree::before {

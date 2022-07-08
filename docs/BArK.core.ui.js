@@ -19,6 +19,16 @@
 			tree: _initHooks(),
 		};
 		
+		// setup animation
+		
+		core.ui.animation = {
+			get tool() { return _currentToolAnimationHook; },
+			set tool(callback) { _currentToolAnimationHook = callback; },
+			get viewer() { return _currentViewerAnimationHook; },
+			set viewer(callback) { _currentViewerAnimationHook = callback; },
+			get tick() { return _lastTick; },
+		};
+		
 		core.ui.containerElement = window.document.getElementById("BArK_container");
 		
 		const leftColumn = window.document.createElement("DIV");
@@ -76,13 +86,19 @@
 	
 // Hooks
 
+	var _currentViewerAnimationHook = null;
+	var _currentToolAnimationHook = null;
+
     function _initHooks() {
 		_hooks = [];
+		_setupAnimation();
 		return {
 			attach: function(hook) {
 				_hooks.push(hook);
 			},
 			run: function(context) {
+				_currentViewerAnimationHook = null;
+				_currentToolAnimationHook = null;
 				core.ui.toolbox.clear();
 				_viewer.innerHTML = "";
 				var viewerFunction = null;
@@ -94,6 +110,28 @@
 				}
 			}
 		};
+	}
+	
+	var _performanceOrigin = null;
+	var _lastTick = 0;
+	const _frameLength = 400; // in milliseconds
+	
+	function _setupAnimation() {
+		_performanceOrigin = performance.now()
+		window.requestAnimationFrame(_despatchAnimationHooks);
+	}
+	
+	function _despatchAnimationHooks(now) {
+		const delta = now - _performanceOrigin;
+		const ticks = Math.floor(delta / _frameLength);
+		if (ticks > _lastTick) {
+			_lastTick = ticks;
+			if (_currentToolAnimationHook != null) 
+				_currentToolAnimationHook(_lastTick);
+			if (_currentViewerAnimationHook != null)
+				_currentViewerAnimationHook(_lastTick);
+		}
+		window.requestAnimationFrame(_despatchAnimationHooks);
 	}
 
 // Tree	
