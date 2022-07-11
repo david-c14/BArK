@@ -155,6 +155,16 @@
 				i = results.index;
 				game.variables.add(results.id, results.value);
 			}
+			else if (_getType(curLine) === "TUNE") {
+				const results = _parseTune(lines, i);
+				i = results.index;
+				game.tunes.add(results.id, results.data);
+			}
+			else if (_getType(curLine) === "BLIP") {
+				const results = _parseBlip(lines, i);
+				i = results.index;
+				game.blips.add(results.id, results.data);
+			}
 			else if (_getType(curLine) === "DEFAULT_FONT") {
 				game.defaultFont = _getArg(lines[i++], 1);
 			}
@@ -209,6 +219,14 @@
 		const varsNode = gameNode.addChild("Variables", "Variables", 0);
 		for(let i = 0; i < game.variables.count; i++) {
 			varsNode.addChild(game.variables.variable(i).id, "Variable", game.variables.variable(i).id);
+		}
+		const tunesNode = gameNode.addChild("Tunes", "Tunes", 0);
+		for(let i = 0; i < game.tunes.count; i++) {
+			tunesNode.addChild(game.tunes.tune(i).id, "Tune", game.tunes.tune(i).id);
+		}
+		const blipsNode = gameNode.addChild("Blips", "Blips", 0);
+		for(let i = 0; i < game.blips.count; i++) {
+			blipsNode.addChild(game.blips.blip(i).id, "Blip", game.blips.blip(i).id);
 		}
 		const fontsNode = gameNode.addChild("Fonts", "Fonts", 0);
 		for(let i = 0; i < game.fonts.count; i++) {
@@ -283,6 +301,13 @@
 			if (_getType(lines[i]) === "COL") {
 				tileData.col = parseInt(_getId(lines[i]));
 			}
+			if (_getType(lines[i]) === "BGC") {
+				const bgc = _getId(lines[i]);
+				if (bgc === "*")
+					tileData.bgc = -1;
+				else
+					tileData.bgc = parseInt(bgc);
+			}
 			else if (_getType(lines[i]) === "NAME") {
 				/* NAME */
 				tileData.name = lines[i].split(/\s(.+)/)[1];
@@ -322,6 +347,13 @@
 			if (_getType(lines[i]) === "COL") {
 				spriteData.col = parseInt(_getId(lines[i]));
 			}
+			if (_getType(lines[i]) === "BGC") {
+				const bgc = _getId(lines[i]);
+				if (bgc === "*")
+					spriteData.bgc = -1;
+				else
+					spriteData.bgc = parseInt(bgc);
+			}
 			else if (_getType(lines[i]) === "POS") {
 				const posArgs = lines[i].split(" ");
 				spriteData.room = posArgs[1];
@@ -339,6 +371,10 @@
 				const itemId = _getId(lines[i]);
 				const itemCount = parseFloat(_getArg(lines[i], 2));
 				spriteData.inventory[itemId] = itemCount;
+			}
+			else if (_getType(lines[i]) == "BLIP") {
+				var blipId = _getId(lines[i]);
+				spriteData.blip = blipId;
 			}
 			
 			i++;
@@ -367,11 +403,22 @@
 			if (_getType(lines[i]) === "COL") {
 				itemData.col = parseInt(_getId(lines[i]));
 			}
+			if (_getType(lines[i]) === "BGC") {
+				const bgc = _getId(lines[i]);
+				if (bgc === "*")
+					itemData.bgc = -1;
+				else
+					itemData.bgc = parseInt(bgc);
+			}
 			else if (_getType(lines[i]) === "DLG") {
 				itemData.dlg = _getId(lines[i]);
 			}
 			else if (_getType(lines[i]) === "NAME") {
 				itemData.name = lines[i].split(/\s(.+)/)[1];
+			}
+			else if (_getType(lines[i]) == "BLIP") {
+				var blipId = _getId(lines[i]);
+				itemData.blip = blipId;
 			}
 			
 			i++;
@@ -388,6 +435,8 @@
 			id : id,
 			name : null,
 			col : (type === "TIL") ? 1 : 2,
+			bgc : 0,
+			blip : null,
 			animation : {
 				isAnimated : false,
 				frameIndex : 0,
@@ -456,6 +505,8 @@
 			items: [],
 			pal: null,
 			name: null,
+			ava: null,
+			tune: "0",
 		};
 		i++;
 		
@@ -528,6 +579,12 @@
 			else if (_getType(lines[i]) === "PAL") {
 				roomData.pal = _getId(lines[i]);
 			}
+			else if (_getType(lines[i]) === "AVA") {
+				roomData.avatar = _getId(lines[i]);
+			}
+			else if (_getType(lines[i]) === "TUNE") {
+				roomData.tune = _getId(lines[i]);
+			}
 			else if (_getType(lines[i]) === "NAME") {
 				const name = lines[i].split(/\s(.+)/)[1];
 				roomData.name = name;
@@ -593,6 +650,32 @@
 		const value = lines[i];
 		i++;
 		return { id: id, value: value, index: i };
+	};
+	
+	function _parseTune(lines, i) {
+		const id = _getId(lines[i]);
+		var data = lines[i];
+		i++;
+		
+		while (i < lines.length && lines[i] != "") {
+			data += "\n" + lines[i];
+			i++;
+		}
+		
+		return {id: id, data: data, index: i};
+	};
+	
+	function _parseBlip(lines, i) {
+		const id = _getId(lines[i]);
+		var data = lines[i];
+		i++;
+		
+		while (i < lines.length && lines[i] != "") {
+			data += "\n" + lines[i];
+			i++;
+		}
+		
+		return {id: id, data: data, index: i};
 	};
 	
 	function _parseFont(lines, i) {

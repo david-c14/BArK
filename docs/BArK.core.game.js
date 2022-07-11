@@ -67,6 +67,8 @@
 		const _rooms = rooms();
 		const _variables = variables();
 		const _fonts = fonts();
+		const _tunes = tunes();
+		const _blips = blips();
 		const _id = id;
 		
 		const _game = {
@@ -108,6 +110,14 @@
 			
 			get fonts() {
 				return _fonts;
+			},
+			
+			get tunes() {
+				return _tunes;
+			},
+			
+			get blips() {
+				return _blips;
 			},
 			
 			get id() {
@@ -249,6 +259,7 @@
 			id: tileData.id,
 			name: tileData.name,
 			color: tileData.col,
+			bgc: tileData.bgc,
 			isAnimated: tileData.animation.isAnimated,
 			frameList: tileData.animation.frameList,
 			frameIndex: tileData.animation.frameIndex,
@@ -295,6 +306,8 @@
 			id: spriteData.id,
 			name: spriteData.name,
 			color: spriteData.col,
+			bgc: spriteData.bgc,
+			blip: spriteData.blip,
 			isAnimated: spriteData.animation.isAnimated,
 			frameList: spriteData.animation.frameList,
 			frameIndex: spriteData.animation.frameIndex,
@@ -345,6 +358,8 @@
 			id: itemData.id,
 			name: itemData.name,
 			color: itemData.col,
+			bgc: itemData.bgc,
+			blip: itemData.blip,
 			isAnimated: itemData.animation.isAnimated,
 			frameList: itemData.animation.frameList,
 			frameIndex: itemData.animation.frameIndex,
@@ -486,6 +501,8 @@
 			id: roomData.id,
 			name: roomData.name,
 			pal: roomData.pal,
+			avatar: roomData.avatar,
+			tune: roomData.tune,
 			get ends() {
 				return _ends;
 			},
@@ -588,6 +605,86 @@
 		};
 		
 		return _font;
+	}
+	
+	function tunes(game) {
+		const _list = [];
+		const _game = game;
+		
+		const _tunes = {
+			add: function(id, data) {
+				const _tune = tune(id, data, game);
+				_list.push(_tune);
+				return _tune;
+			},
+			
+			get count() {
+				return _list.length;
+			},
+			
+			get game() {
+				return _game;
+			},
+			
+			tune: function(index) {
+				return _listItem(_list, index);
+			},
+		};
+		
+		return _tunes;
+	}
+	
+	function tune(id, data, game) {
+		const _game = game;
+		const _tune = {
+			id: id,
+			data: data,
+			get game() {
+				return _game;
+			},
+		};
+		
+		return _tune;
+	}
+	
+	function blips(game) {
+		const _list = [];
+		const _game = game;
+		
+		const _blips = {
+			add: function(id, data) {
+				const _blip = blip(id, data, game);
+				_list.push(_blip);
+				return _blip;
+			},
+			
+			get count() {
+				return _list.length;
+			},
+			
+			get game() {
+				return _game;
+			},
+			
+			blip: function(index) {
+				return _listItem(_list, index);
+			},
+		};
+		
+		return _blips;
+	}
+	
+	function blip(id, data, game) {
+		const _game = game;
+		const _blip = {
+			id: id,
+			data: data,
+			get game() {
+				return _game;
+			},
+		};
+		
+		return _blip;
 	}
 
 })();
