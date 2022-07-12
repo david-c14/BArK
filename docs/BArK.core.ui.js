@@ -68,6 +68,11 @@
 		
 		_initTool(rightColumn);
 		
+		// setup ui methods
+		
+		core.ui.HTMLColor = function(bitsyColor) {
+			return "rgb(" + bitsyColor + ")";
+		};
 	};
 	
 	core.ui.start = function(){

@@ -15,29 +15,21 @@
 	};
 	
 	core.renderer.start = function(){
+		
+		core.renderer.drawFrame = _drawFrame;
+		
 		core.ui.hooks.tree.attach(function(context) {
 			if (context.type == "Module") {
 				if (context.id == core.renderer.name) {
 					return _viewer_renderer_module;
 				}
 			} else if (context.type === "Tile") {
-				core.ui.toolbox.addTool("Edit Animation", function(tool, node) {
-					_tool_animation_tile(tool, node, context);
-				});
 				return _viewer_renderer_tile;
 			} else if (context.type === "Sprite") {
-				core.ui.toolbox.addTool("Edit Animation", function(tool, node) {
-					_tool_animation_sprite(tool, node, context);
-				});
 				return _viewer_renderer_sprite;
 			} else if (context.type === "Item") {
-				core.ui.toolbox.addTool("Edit Animation", function(tool, node) {
-					_tool_animation_item(tool, node, context);
-				});
 				return _viewer_renderer_item;
 			}
-			
-			
 		});
 	};
 	
@@ -84,39 +76,6 @@
 		_renderer.draw();
 	};
 	
-	function _tool_animation_tile(tool, node, context) {
-		const _game = core.game.games.game(context.parent.parent.id);
-		const _tile = _game.tiles.tile(context.id);
-		const _animator = frameAnimator(node, _tile);
-	};
-	
-	function _tool_animation_sprite(tool, node, context) {
-		const _game = core.game.games.game(context.parent.parent.id);
-		const _sprite = _game.sprites.sprite(context.id);
-		const _animator = frameAnimator(node, _sprite);
-	};
-	
-	function _tool_animation_item(tool, node, context) {
-		const _game = core.game.games.game(context.parent.parent.id);
-		const _item = _game.items.item(context.id);
-		const _animator = frameAnimator(node, _item);
-	};
-	
-	function frameAnimator(node, shape) {
-		const _div = window.document.createElement("DIV");
-		_div.style.width="80px";
-		_div.style.height="400px";
-		_div.style.overflowY = "scroll";
-		node.appendChild(_div);
-		for(let i = 0; i < shape.frameList.length; i++) {
-			const _canvas = window.document.createElement("CANVAS");
-			_canvas.style.width = "64px";
-			_canvas.style.height = "64px";
-			_div.appendChild(_canvas);
-			_drawFrame(_canvas, shape.frameList[i], _blueprintBackground, _blueprintForeground);
-		}
-	}
-	
 	function shapeRenderer(node, shape, backgroundColor, foregroundColor) {
 
 		const _div = window.document.createElement("DIV");
@@ -128,8 +87,8 @@
 		node.appendChild(_div);
 		_div.appendChild(_canvas);
 
-		var _bgColor = getHtmlColor(backgroundColor);
-		var _fgColor = getHtmlColor(foregroundColor);
+		var _bgColor = core.ui.HTMLColor(backgroundColor);
+		var _fgColor = core.ui.HTMLColor(foregroundColor);
 		var _frameIndex = core.ui.animation.tick % shape.frameList.length;
 		
 		const _shapeRenderer = {
@@ -164,10 +123,6 @@
 			}
 		}
 	}
-	
-	function getHtmlColor(bitsyColor) {
-		return "rgb(" + bitsyColor + ")";
-	};
 	
 })();
 
