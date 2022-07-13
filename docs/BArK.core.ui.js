@@ -73,6 +73,7 @@
 		core.ui.HTMLColor = function(bitsyColor) {
 			return "rgb(" + bitsyColor + ")";
 		};
+		
 	};
 	
 	core.ui.start = function(){
@@ -83,6 +84,8 @@
 				}
 			};
 		});
+		
+		const barkNode = core.ui.tree.find("BArK")
 	};
 	
 	function _viewer_ui(node) {

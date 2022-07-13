@@ -97,7 +97,7 @@
 		node.appendChild(_downButton);
 
 		const _div = window.document.createElement("DIV");
-		_div.style.width="180px";
+		_div.style.width="170px";
 		_div.style.height="400px";
 		_div.style.overflowY = "scroll";
 		_div.style.marginLeft = "5px";
@@ -194,9 +194,37 @@
 		}
 		
 		function _moveUpFrame() {
+			if (_selectedIndex < 0) {
+				window.alert("You must select a frame to move");
+				return;
+			}
+			if (_selectedIndex === 0) {
+				window.alert("The selected frame is already the first frame");
+				return;
+			}
+			const frame = shape.frameList[_selectedIndex];
+			shape.frameList.splice(_selectedIndex, 1);
+			_selectedIndex = _selectedIndex - 1;
+			shape.frameList.splice(_selectedIndex, 0, frame);
+			_fillList();
+			_highlightSelected();
 		}
 		
 		function _moveDownFrame() {
+			if (_selectedIndex < 0) {
+				window.alert("You must select a frame to move");
+				return;
+			}
+			if (_selectedIndex >= shape.frameList.length - 1) {
+				window.alert("The selected frame is already the last frame");
+				return;
+			}
+			const frame = shape.frameList[_selectedIndex];
+			shape.frameList.splice(_selectedIndex, 1);
+			_selectedIndex = _selectedIndex + 1;
+			shape.frameList.splice(_selectedIndex, 0, frame);
+			_fillList();
+			_highlightSelected();
 		}
 	}
 	

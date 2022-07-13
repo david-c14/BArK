@@ -35,7 +35,7 @@
 	};
 
 	function _viewer_BArK(node) {
-		node.innerText = "BArK"
+		node.innerHTML = "<center><h1>BArK</h1><h2><em>B</em>itsy <em>Ar</em>my <em>K</em>nife</h2>Copyright &copy; 2022 carbon14 (David O'Rourke)<br/><br/></center>"
 	};
 	
 })();

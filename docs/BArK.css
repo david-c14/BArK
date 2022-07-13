@@ -1,5 +1,6 @@
 html {
 	font-family: "Segoe UI", Candara, "Bitstream Vera Sans", "DejaVu Sans", "Bitstream Vera Sans", "Trebuchet MS", Verdana, "Verdana Ref", sans-serif;
+	background-color: #cccccc;
 }
 
 #BArK_container {
@@ -31,6 +32,7 @@ html {
 	border: solid 1px black;
 	min-height: 40px;
 	margin: 10px;
+	background-color: white;
 }
 
 #BArK_container > div + div > * {
