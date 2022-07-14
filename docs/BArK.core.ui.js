@@ -258,7 +258,10 @@
 		
 		var _tree = {
 			attach: function(node) {
-				node.appendChild(treeElement);
+				const containerElement = window.document.createElement("DIV");
+				containerElement.setAttribute("data-name", "Explore");
+				node.appendChild(containerElement);
+				containerElement.appendChild(treeElement);
 			},
 			
 			addChild: function(name, type, id) {
@@ -365,13 +368,17 @@
 		_currentTool?.deselect();
 		_currentTool = tool;
 		_currentTool.select();
-		callback(tool, _tool);
+		const name = callback(tool, _tool);
+		_setToolName(name);
 	}
 
 	function _initToolbox(node) {
+		const containerElement = window.document.createElement("DIV");
+		containerElement.setAttribute("data-name", "Toolbox");
+		node.appendChild(containerElement);
 		var toolboxElement = window.document.createElement("DIV");
 		toolboxElement.id = "BArK_toolbox";
-		node.appendChild(toolboxElement);
+		containerElement.appendChild(toolboxElement);
 		const tools = [];
 		
 		var _toolbox = {
@@ -404,9 +411,12 @@
 	var _viewer = null;
 
 	function _initViewer(node) {
+		const _container = window.document.createElement("DIV");
+		_container.setAttribute("data-name", "Viewer");
+		node.appendChild(_container);
 		_viewer = window.document.createElement("DIV");
 		_viewer.id = "BArK_viewer";
-		node.appendChild(_viewer);
+		_container.appendChild(_viewer);
 	}
 	
 // Tool
@@ -414,17 +424,22 @@
 	var _tool = null;
 	
 	function _initTool(node) {
+		const _container = window.document.createElement("DIV");
+		node.appendChild(_container);
 		_tool = window.document.createElement("DIV");
 		_tool.id = "BArK_tool";
-		_tool.setAttribute("data-name", "\u2005");
-		node.appendChild(_tool);
+		_container.appendChild(_tool);
+		_setToolName("\u2005");
 	}
 	
 	function _clearTool() {
 		_tool.innerHTML = "";
-		_tool.setAttribute("data-name", "\u2005");
+		_setToolName("\u2005");
 	}
 	
+	function _setToolName(name) {
+		_tool.parentElement.setAttribute("data-name", name);
+	}
 
 })();
 

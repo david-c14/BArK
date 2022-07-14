@@ -19,6 +19,7 @@
 			if (context.type == "GameList") {
 				core.ui.toolbox.addTool("Import Game", function(tool, node) {
 					_tool_import_game(tool, node);
+					return "Import Game : Paste or drag game here";
 				});
 			} else if (context.type == "Module") {
 				if (context.id == core.parser.name) {
@@ -33,7 +34,6 @@
 	}
 	
 	function _tool_import_game(tool, node) {
-		node.setAttribute("data-name", "Import Game : Paste or drag game here");
 		
 		const dropBox = window.document.createElement("TEXTAREA");
 		dropBox.style.height="100px";
@@ -118,6 +118,12 @@
 				}
 
 				//skip blank lines & comments
+				i++;
+			}
+			else if (_getType(curLine) === "!") {
+				if (_getArg(curLine,1) === "TXT_MODE") {
+					game.textMode = _getArg(curLine,2);
+				}
 				i++;
 			}
 			else if (_getType(curLine) === "PAL") {

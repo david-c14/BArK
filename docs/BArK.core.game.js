@@ -128,6 +128,7 @@
 			defaultFont: null,
 			textDirection: null,
 			fontData: null,
+			textMode: "0",
 			
 		};
 		return _game;

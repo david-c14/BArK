@@ -3,6 +3,7 @@ html {
 	background-color: #cccccc;
 }
 
+/* BArK */
 #BArK_container {
 	font-size: 80%;
 }
@@ -13,11 +14,14 @@ html {
 	clear: both;
 }
 
+/* Columns */
 #BArK_container > div {
 	float: left;
 }
 
-#BArK_container > div > *::before {
+/* Containers */
+#BArK_container > div > div::before {
+	content: attr(data-name);
 	display: block;
 	font-size: 90%;
 	color: white;
@@ -27,7 +31,7 @@ html {
 	padding: 2px;
 }
 
-#BArK_container > div > * {
+#BArK_container > div > div {
 	min-width: 300px;
 	border: solid 1px black;
 	min-height: 40px;
@@ -35,12 +39,14 @@ html {
 	background-color: white;
 }
 
-#BArK_container > div + div > * {
-	min-width: 450px;
+/* component */
+#BArK_container > div > div > * {
+	margin: 3px;
 }
 
-#BArK_tree::before {
-	content: "Explore";
+/* 2nd Column */
+#BArK_container > div + div > * {
+	min-width: 450px;
 }
 
 #BArK_tree {
@@ -88,28 +94,12 @@ html {
 	color: black;
 }
 
-#BArK_tree li.select {
+#BArK_container li.select {
 	color: DodgerBlue;
 }
 
-#BArK_toolbox::before {
-	content: "Toolbox";
-}
-
-#BArK_toolbox div {
-	width: 100px;
-}
-
-#BArK_toolbox div.select {
+#BArK_container div.select {
 	color: DodgerBlue;
-}
-
-#BArK_viewer::before {
-	content: "Viewer";
-}
-
-#BArK_tool::before {
-	content: attr(data-name);
 }
 
 #BArK_container .button {

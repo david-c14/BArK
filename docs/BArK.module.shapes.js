@@ -25,14 +25,17 @@
 			} else if (context.type === "Tile") {
 				core.ui.toolbox.addTool("Edit Animation", function(tool, node) {
 					_tool_animation_tile(tool, node, context);
+					return "Edit Tile Animation";
 				});
 			} else if (context.type === "Sprite") {
 				core.ui.toolbox.addTool("Edit Animation", function(tool, node) {
 					_tool_animation_sprite(tool, node, context);
+					return "Edit Sprite Animation";
 				});
 			} else if (context.type === "Item") {
 				core.ui.toolbox.addTool("Edit Animation", function(tool, node) {
 					_tool_animation_item(tool, node, context);
+					return "Edit Item Animation";
 				});
 			}
 			
