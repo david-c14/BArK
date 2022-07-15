@@ -84,8 +84,6 @@
 				}
 			};
 		});
-		
-		const barkNode = core.ui.tree.find("BArK")
 	};
 	
 	function _viewer_ui(node) {
@@ -151,9 +149,9 @@
 			return;
 		}
 		_currentTreeNode?.deselect();
+		node.select();
 		_currentTreeNode = node;
-		_currentTreeNode.select();
-		core.ui.hooks.tree.run(node);
+		//core.ui.hooks.tree.run(node);
 	}
 	
 	function _wrapTreeNode(node, parent) {
@@ -196,11 +194,17 @@
 			},
 			
 			select: function() {
+				if (_currentTreeNode == _wrapper) {
+					return;
+				}
+				_currentTreeNode?.deselect();
 				node.classList.add("select");
+				core.ui.hooks.tree.run(_wrapper);
 			},
 			
 			deselect: function() {
 				node.classList.remove("select");
+				_currentTreeNode = null;
 			},
 			
 			get parent() {

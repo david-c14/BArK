@@ -18,11 +18,6 @@
 		}
 		for (const [key, value] of Object.entries(modules)) {
 			if (typeof value == "object") {
-				value.init();
-			}
-		}
-		for (const [key, value] of Object.entries(modules)) {
-			if (typeof value == "object") {
 				value.start();
 			}
 		}
@@ -32,6 +27,10 @@
 				return _viewer_BArK;
 			}
 		});			
+
+		const barkNode = core.ui.tree.find("BArK")
+		
+		barkNode.select();
 	};
 
 	function _viewer_BArK(node) {

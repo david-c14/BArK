@@ -12,9 +12,6 @@
 	
 	modules.shapes.minorVersion = 1;
 	
-	modules.shapes.init = function(){
-	};
-	
 	modules.shapes.start = function(){
 		core = BArK.core;
 		core.ui.hooks.tree.attach(function(context) {
