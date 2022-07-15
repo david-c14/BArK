@@ -108,7 +108,7 @@
 				_currentViewerAnimationHook = null;
 				_currentToolAnimationHook = null;
 				core.ui.toolbox.clear();
-				_viewer.innerHTML = "";
+				_resetViewer();
 				var viewerFunction = null;
 				_hooks.forEach(function(current) {
 					viewerFunction = current(context) || viewerFunction;
@@ -409,31 +409,43 @@
 // Viewer	
 
 	var _viewer = null;
+	var _viewerContainer = null;
 
 	function _initViewer(node) {
-		const _container = window.document.createElement("DIV");
-		_container.setAttribute("data-name", "Viewer");
-		node.appendChild(_container);
+		_viewerContainer = window.document.createElement("DIV");
+		_viewerContainer.setAttribute("data-name", "Viewer");
+		node.appendChild(_viewerContainer);
+		_resetViewer();
+	}
+	
+	function _resetViewer() {
+		_viewerContainer.innerHTML = "";
 		_viewer = window.document.createElement("DIV");
 		_viewer.id = "BArK_viewer";
-		_container.appendChild(_viewer);
+		_viewerContainer.appendChild(_viewer);
 	}
 	
 // Tool
 
 	var _tool = null;
+	var _toolContainer = null;
 	
 	function _initTool(node) {
-		const _container = window.document.createElement("DIV");
-		node.appendChild(_container);
-		_tool = window.document.createElement("DIV");
-		_tool.id = "BArK_tool";
-		_container.appendChild(_tool);
+		_toolContainer = window.document.createElement("DIV");
+		node.appendChild(_toolContainer);
+		_resetTool();
 		_setToolName("\u2005");
 	}
 	
+	function _resetTool() {
+		_toolContainer.innerHTML = "";
+		_tool = window.document.createElement("DIV");
+		_tool.id = "BArK_tool";
+		_toolContainer.appendChild(_tool);
+	}
+	
 	function _clearTool() {
-		_tool.innerHTML = "";
+		_resetTool();
 		_setToolName("\u2005");
 	}
 	

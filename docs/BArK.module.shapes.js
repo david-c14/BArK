@@ -114,7 +114,7 @@
 				const _canvas = window.document.createElement("CANVAS");
 				_canvas.style.width = "128px";
 				_canvas.style.height = "128px";
-				_canvas.style.border = "5px solid transparent";
+				_canvas.classList.add("list")
 				_div.appendChild(_canvas);
 				core.renderer.drawFrame(_canvas, shape.frameList[i], _blueprintBackground, _blueprintForeground);
 				_canvas.addEventListener("click", function(event) {
@@ -143,11 +143,11 @@
 			for(let i = 0; i < _div.childElementCount; i++) {
 				const child = _div.children[i];
 				if (_selectedIndex === i) {
-					child.style.borderColor = "red";
+					child.classList.add("select");
 					child.scrollIntoView();
 				}
 				else {
-					child.style.borderColor = "transparent";
+					child.classList.remove("select");
 				}
 			}
 		}
