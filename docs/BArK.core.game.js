@@ -357,8 +357,20 @@
 		const _game = game;
 		const _treeNode = treeNode.addChild("Items", "Items", 0);
 		
+		function _getNextId() {
+			const _sortedList = _list.sort(function(a,b) { return parseInt(b.id, 36) - parseInt(a.id, 36); });
+			if (_sortedList.length < 1) 
+				return "0";
+			let id = parseInt(_sortedList[0].id, 36);
+			id++;
+			return id.toString(36);
+		};
+		
 		const _items = {
 			add: function(itemData) {
+				if (itemData.id === "") {
+					itemData.id = _getNextId();
+				}
 				const _item = item(itemData, game, _treeNode);
 				_list.push(_item);
 				return _item;

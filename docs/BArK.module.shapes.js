@@ -95,7 +95,7 @@
 		_downButton.addEventListener("click", function() { _moveDownFrame();
 		});
 		node.appendChild(_downButton);
-
+		
 		const _div = window.document.createElement("DIV");
 		_div.style.width="170px";
 		_div.style.height="400px";
@@ -226,6 +226,7 @@
 			_fillList();
 			_highlightSelected();
 		}
+		
 	}
 	
 })();
