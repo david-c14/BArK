@@ -100,7 +100,8 @@
 	const _height = _mapsize * _tilesize;	
 	
 	function _parse(text) {
-		const game = core.game.games.add();
+		const gamesNode = core.ui.tree.find("Games");
+		const game = core.game.games.add(gamesNode);
 		var lines = text.split("\n");
 		var i = 0;
 
@@ -110,6 +111,7 @@
 			if (i == 0) {
 				var title;
 				i = _parseTitle(lines, i, game);
+				game.title = game.title;
 			}
 			else if (curLine.length <= 0 || curLine.charAt(0) === "#") {
 				// collect version number (from a comment.. hacky I know)
@@ -187,57 +189,60 @@
 			}
 		}
 		
-		const gameNode = core.ui.tree.find("Games").addChild(game.title, "Game", game.id);
+//		const gameNode = core.ui.tree.find("Games").addChild(game.title, "Game", game.id);
+//		gameNode.openAndSelect();
+		const gameNode = game.treeNode;
 		gameNode.openAndSelect();
-		const palettesNode = gameNode.addChild("Palettes", "Palettes", 0);
-		for(var i = 0; i < game.palettes.count; i++) {
-			palettesNode.addChild(game.palettes.palette(i).name, "Palette", game.palettes.palette(i).id);
-		}
-		const tilesNode = gameNode.addChild("Tiles", "Tiles", 0);
-		for(var i = 0; i < game.tiles.count; i++) {
-			tilesNode.addChild(game.tiles.tile(i).name || game.tiles.tile(i).id, "Tile", game.tiles.tile(i).id);
-		}
-		const spritesNode = gameNode.addChild("Sprites", "Sprites", 0);
-		for(var i = 0; i < game.sprites.count; i++) {
-			spritesNode.addChild(game.sprites.sprite(i).name || game.sprites.sprite(i).id, "Sprite", game.sprites.sprite(i).id);
-		}
-		const itemsNode = gameNode.addChild("Items", "Items", 0);
-		for(var i = 0; i < game.items.count; i++) {
-			itemsNode.addChild(game.items.item(i).name || game.items.item(i).id, "Item", game.items.item(i).id);
-		}
-		const roomsNode = gameNode.addChild("Rooms", "Rooms", 0);
-		for(var i = 0; i < game.rooms.count; i++) {
-			const room = game.rooms.room(i);
-			const roomNode = roomsNode.addChild(room.name || room.id, "Room", room.id);
-			const exitsNode = roomNode.addChild("Exits", "Exit", 0);
-			for(let j = 0; j < room.exits.count; j++) {
-				exitsNode.addChild(room.exits.exit(j).label, "Exit", room.exits.exit(j).id);
-			}
-			const endsNode = roomNode.addChild("Endings", "Endings", 0);
-			for(let j = 0; j < room.ends.count; j++) {
-				endsNode.addChild(room.ends.end(j).label, "Ending", room.ends.end(j).id);
-			}
-		}
-		const dialogsNode = gameNode.addChild("Dialogs", "Dialogs", 0);
-		for(let i = 0; i < game.dialogs.count; i++) {
-			dialogsNode.addChild(game.dialogs.dialog(i).name || game.dialogs.dialog(i).id, "Dialog", game.dialogs.dialog(i).id);
-		}
-		const varsNode = gameNode.addChild("Variables", "Variables", 0);
-		for(let i = 0; i < game.variables.count; i++) {
-			varsNode.addChild(game.variables.variable(i).id, "Variable", game.variables.variable(i).id);
-		}
-		const tunesNode = gameNode.addChild("Tunes", "Tunes", 0);
-		for(let i = 0; i < game.tunes.count; i++) {
-			tunesNode.addChild(game.tunes.tune(i).id, "Tune", game.tunes.tune(i).id);
-		}
-		const blipsNode = gameNode.addChild("Blips", "Blips", 0);
-		for(let i = 0; i < game.blips.count; i++) {
-			blipsNode.addChild(game.blips.blip(i).id, "Blip", game.blips.blip(i).id);
-		}
-		const fontsNode = gameNode.addChild("Fonts", "Fonts", 0);
-		for(let i = 0; i < game.fonts.count; i++) {
-			fontsNode.addChild(game.fonts.font(i).id, "Font", game.fonts.font(i).id);
-		}
+		
+//		const palettesNode = gameNode.addChild("Palettes", "Palettes", 0);
+//		for(var i = 0; i < game.palettes.count; i++) {
+//			palettesNode.addChild(game.palettes.palette(i).name, "Palette", game.palettes.palette(i).id);
+//		}
+//		const tilesNode = gameNode.addChild("Tiles", "Tiles", 0);
+//		for(var i = 0; i < game.tiles.count; i++) {
+//			tilesNode.addChild(game.tiles.tile(i).name || game.tiles.tile(i).id, "Tile", game.tiles.tile(i).id);
+//		}
+//		const spritesNode = gameNode.addChild("Sprites", "Sprites", 0);
+//		for(var i = 0; i < game.sprites.count; i++) {
+//			spritesNode.addChild(game.sprites.sprite(i).name || game.sprites.sprite(i).id, "Sprite", game.sprites.sprite(i).id);
+//		}
+//		const itemsNode = gameNode.addChild("Items", "Items", 0);
+//		for(var i = 0; i < game.items.count; i++) {
+//			itemsNode.addChild(game.items.item(i).name || game.items.item(i).id, "Item", game.items.item(i).id);
+//		}
+//		const roomsNode = gameNode.addChild("Rooms", "Rooms", 0);
+//		for(var i = 0; i < game.rooms.count; i++) {
+//			const room = game.rooms.room(i);
+//			const roomNode = roomsNode.addChild(room.name || room.id, "Room", room.id);
+//			const exitsNode = roomNode.addChild("Exits", "Exit", 0);
+//			for(let j = 0; j < room.exits.count; j++) {
+//				exitsNode.addChild(room.exits.exit(j).label, "Exit", room.exits.exit(j).id);
+//			}
+//			const endsNode = roomNode.addChild("Endings", "Endings", 0);
+//			for(let j = 0; j < room.ends.count; j++) {
+//				endsNode.addChild(room.ends.end(j).label, "Ending", room.ends.end(j).id);
+//			}
+//		}
+//		const dialogsNode = gameNode.addChild("Dialogs", "Dialogs", 0);
+//		for(let i = 0; i < game.dialogs.count; i++) {
+//			dialogsNode.addChild(game.dialogs.dialog(i).name || game.dialogs.dialog(i).id, "Dialog", game.dialogs.dialog(i).id);
+//		}
+//		const varsNode = gameNode.addChild("Variables", "Variables", 0);
+//		for(let i = 0; i < game.variables.count; i++) {
+//			varsNode.addChild(game.variables.variable(i).id, "Variable", game.variables.variable(i).id);
+//		}
+//		const tunesNode = gameNode.addChild("Tunes", "Tunes", 0);
+//		for(let i = 0; i < game.tunes.count; i++) {
+//			tunesNode.addChild(game.tunes.tune(i).id, "Tune", game.tunes.tune(i).id);
+//		}
+//		const blipsNode = gameNode.addChild("Blips", "Blips", 0);
+//		for(let i = 0; i < game.blips.count; i++) {
+//			blipsNode.addChild(game.blips.blip(i).id, "Blip", game.blips.blip(i).id);
+//		}
+//		const fontsNode = gameNode.addChild("Fonts", "Fonts", 0);
+//		for(let i = 0; i < game.fonts.count; i++) {
+//			fontsNode.addChild(game.fonts.font(i).id, "Font", game.fonts.font(i).id);
+//		}
 	}
 	
 	function _getType(line) {

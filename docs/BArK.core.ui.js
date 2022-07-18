@@ -144,24 +144,23 @@
 
 	var _currentTreeNode = null;
 	
-	function _selectNode(node) {
-		if (_currentTreeNode == node) {
+	function _selectTreeNode(treeNode) {
+		if (_currentTreeNode == treeNode) {
 			return;
 		}
 		_currentTreeNode?.deselect();
-		node.select();
-		_currentTreeNode = node;
-		//core.ui.hooks.tree.run(node);
+		treeNode.select();
+		_currentTreeNode = treeNode;
 	}
 	
-	function _wrapTreeNode(node, parent) {
+	function _wrapTreeNode(element, parent) {
 		const children = [];
 		
-		const _wrapper = {
+		const _treeNode = {
 			addChild: function(name, type, id) {
 				var list;
-				if (node.childElementCount == 1) {
-					const caret = node.querySelector("span");
+				if (element.childElementCount == 1) {
+					const caret = element.querySelector("span");
 					caret.classList.add("caret");
 					caret.addEventListener("click", function() {
 						this.parentElement.querySelector(".nested").classList.toggle("active");
@@ -169,41 +168,41 @@
 					});
 					list = window.document.createElement("UL");
 					list.classList.add("nested");
-					node.appendChild(list);
+					element.appendChild(list);
 				}
 				else {
-					list = node.querySelector("ul")
+					list = element.querySelector("ul")
 				}
 				
 				const item = window.document.createElement("LI");
-				const wrapper = _wrapTreeNode(item, _wrapper);
+				const treeNode = _wrapTreeNode(item, _treeNode);
 				item.addEventListener("click", function(event) {
 					event.stopPropagation();
-					_selectNode(wrapper);
+					_selectTreeNode(treeNode);
 				});
-				wrapper.type = type;
-				wrapper.name = name;
-				wrapper.id = id;
+				treeNode.type = type;
+				treeNode.name = name;
+				treeNode.id = id;
 				const caret = window.document.createElement("SPAN");
 				item.appendChild(caret);
 				const textNode = window.document.createTextNode(name);
 				item.appendChild(textNode);
 				list.appendChild(item);
-				children.push(wrapper);
-				return wrapper;
+				children.push(treeNode);
+				return treeNode;
 			},
 			
 			select: function() {
-				if (_currentTreeNode == _wrapper) {
+				if (_currentTreeNode == _treeNode) {
 					return;
 				}
 				_currentTreeNode?.deselect();
-				node.classList.add("select");
-				core.ui.hooks.tree.run(_wrapper);
+				element.classList.add("select");
+				core.ui.hooks.tree.run(_treeNode);
 			},
 			
 			deselect: function() {
-				node.classList.remove("select");
+				element.classList.remove("select");
 				_currentTreeNode = null;
 			},
 			
@@ -212,7 +211,7 @@
 			},
 			
 			get root() {
-				var p = _wrapper;
+				var p = _treeNode;
 				while (p.parent) {
 					p = p.parent;
 				}
@@ -228,30 +227,38 @@
 			},
 			
 			find: function(search) {
-				return _treeFind(_wrapper, search);
+				return _treeFind(_treeNode, search);
 			},
 			
 			open: function() {
-				node.querySelector("span.caret")?.classList.add("caret-down");
-				node.parentElement.classList.add("active");
-				if (_wrapper.parent != _wrapper.root) {
-					_wrapper.parent.open();
+				element.querySelector("span.caret")?.classList.add("caret-down");
+				element.parentElement.classList.add("active");
+				if (_treeNode.parent != _treeNode.root) {
+					_treeNode.parent.open();
 				}
 			},
 			
 			openAndSelect: function() {
-				_wrapper.open();
-				_selectNode(_wrapper);
+				_treeNode.open();
+				_selectTreeNode(_treeNode);
 			},
 			
 			close: function() {
-				node.querySelector("span").classList.remove("caret-down");
-				node.parentElement.classList.remove("active");
+				element.querySelector("span").classList.remove("caret-down");
+				element.parentElement.classList.remove("active");
+			},
+			
+			get text() {
+				return element.childNodes[1].textContent;
+			},
+			
+			set text(value) {
+				element.childNodes[1].textContent = value;
 			},
 		
 		};
 		
-		return _wrapper;
+		return _treeNode;
 	}
 	
 	function _initTree() {
@@ -270,21 +277,21 @@
 			
 			addChild: function(name, type, id) {
 				const item = window.document.createElement("LI");
-				const wrapper = _wrapTreeNode(item, _tree);
+				const treeNode = _wrapTreeNode(item, _tree);
 				item.addEventListener("click", function(event) {
 					event.stopPropagation();
-					_selectNode(wrapper);
+					_selectTreeNode(treeNode);
 				});
-				wrapper.type = type;
-				wrapper.name = name;
-				wrapper.id = id;
+				treeNode.type = type;
+				treeNode.name = name;
+				treeNode.id = id;
 				const caret = window.document.createElement("SPAN");
 				item.appendChild(caret);
 				const textNode = window.document.createTextNode(name);
 				item.appendChild(textNode);
 				treeElement.appendChild(item);
-				children.push(wrapper);
-				return wrapper;
+				children.push(treeNode);
+				return treeNode;
 			},
 			
 			get parent() {
@@ -312,30 +319,30 @@
 		return _tree;
 	}
 	
-	function _treeFind(node, search) {
+	function _treeFind(treeNode, search) {
 		if (search.length < 1) {
-			return node;
+			return treeNode;
 		}
 		const split = search.split(".");
 		search = split.shift();
 		if (search.length < 1) {
-			return node;
+			return treeNode;
 		}
-		for (var i = 0; i < node.count; i++) {
+		for (var i = 0; i < treeNode.count; i++) {
 			switch(search[0]) {
 				case '#': // search by id
-				if (node.child(i).id == search.substr(1)) {
-					return _treeFind(node.child(i), split.join('.'));
+				if (treeNode.child(i).id == search.substr(1)) {
+					return _treeFind(treeNode.child(i), split.join('.'));
 				}
 				break;
 				case '@': // search by type
-				if (node.child(i).type == search.substr(1)) {
-					return _treeFind(node.child(i), split.join('.'));
+				if (treeNode.child(i).type == search.substr(1)) {
+					return _treeFind(treeNode.child(i), split.join('.'));
 				}
 				break;
 				default: // search by name
-				if (node.child(i).name == search) {
-					return _treeFind(node.child(i), split.join('.'));
+				if (treeNode.child(i).name == search) {
+					return _treeFind(treeNode.child(i), split.join('.'));
 				}
 				break;
 			}
@@ -347,18 +354,18 @@
 
 	var _currentTool = null;
 
-	function wrapTool(node) {
+	function wrapTool(element) {
 		return {
 			name: function() {
-				return node.innerText;
+				return element.innerText;
 			},
 			
 			select: function() {
-				node.classList.add("select");
+				element.classList.add("select");
 			},
 			
 			deselect: function() {
-				node.classList.remove("select");
+				element.classList.remove("select");
 			}
 		};
 	};
@@ -376,10 +383,10 @@
 		_setToolName(name);
 	}
 
-	function _initToolbox(node) {
+	function _initToolbox(element) {
 		const containerElement = window.document.createElement("DIV");
 		containerElement.setAttribute("data-name", "Toolbox");
-		node.appendChild(containerElement);
+		element.appendChild(containerElement);
 		var toolboxElement = window.document.createElement("DIV");
 		toolboxElement.id = "BArK_toolbox";
 		containerElement.appendChild(toolboxElement);
@@ -415,10 +422,10 @@
 	var _viewer = null;
 	var _viewerContainer = null;
 
-	function _initViewer(node) {
+	function _initViewer(element) {
 		_viewerContainer = window.document.createElement("DIV");
 		_viewerContainer.setAttribute("data-name", "Viewer");
-		node.appendChild(_viewerContainer);
+		element.appendChild(_viewerContainer);
 		_resetViewer();
 	}
 	
@@ -434,9 +441,9 @@
 	var _tool = null;
 	var _toolContainer = null;
 	
-	function _initTool(node) {
+	function _initTool(element) {
 		_toolContainer = window.document.createElement("DIV");
-		node.appendChild(_toolContainer);
+		element.appendChild(_toolContainer);
 		_resetTool();
 		_setToolName("\u2005");
 	}

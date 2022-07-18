@@ -43,8 +43,8 @@
 		var _gameCount = 0;
 		
 		const _games = {
-			add: function() {
-				const _game = game("" + _gameCount++);
+			add: function(treeNode) {
+				const _game = game(treeNode, "" + _gameCount++);
 				_list.push(_game);
 				return _game;
 			},
@@ -58,26 +58,22 @@
 		return _games;
 	}
 	
-	function game(id) {
-		const _dialogs = dialogs();
-		const _palettes = palettes();
-		const _tiles = tiles();
-		const _sprites = sprites();
-		const _items = items();
-		const _rooms = rooms();
-		const _variables = variables();
-		const _fonts = fonts();
-		const _tunes = tunes();
-		const _blips = blips();
-		const _id = id;
-		
+	function game(treeNode, id) {
+		const _treeNode = treeNode.addChild("", "Game", id);
+
 		const _game = {
+			get treeNode() {
+				return _treeNode;
+			},
+			
 			get title() {
 				return _dialogs.dialog("title").src;
 			},
 			
 			set title(title) {
 				_dialogs.dialog("title").src = title;
+				_treeNode.name = title;
+				_treeNode.text = title;
 			},
 
 			get dialogs() {
@@ -131,6 +127,17 @@
 			textMode: "0",
 			
 		};
+		const _dialogs = dialogs(_game, _treeNode);
+		const _palettes = palettes(_game, _treeNode);
+		const _tiles = tiles(_game, _treeNode);
+		const _sprites = sprites(_game, _treeNode);
+		const _items = items(_game, _treeNode);
+		const _rooms = rooms(_game, _treeNode);
+		const _variables = variables(_game, _treeNode);
+		const _fonts = fonts(_game, _treeNode);
+		const _tunes = tunes(_game, _treeNode);
+		const _blips = blips(_game, _treeNode);
+		const _id = id;
 		return _game;
 	};
 	
@@ -146,13 +153,14 @@
 		return list[index];
 	}
 	
-	function dialogs(game) {
+	function dialogs(game, treeNode) {
 		const _list = [];
 		const _game = game;
+		const _treeNode = treeNode.addChild("Dialogs", "Dialogs", 0);
 		
 		const _dialogs = {
 			add: function(id, src, name) {
-				const _dialog = dialog(id, src, name, _game);
+				const _dialog = dialog(id, src, name, _game, _treeNode);
 				_list.push(_dialog);
 				return _dialog;
 			},
@@ -173,7 +181,7 @@
 		return _dialogs;
 	};
 
-	function dialog(id, src, name, game) {
+	function dialog(id, src, name, game, treeNode) {
 		const _game = game;
 		
 		const _dialog = {
@@ -183,17 +191,22 @@
 			get game() {
 				return _game;
 			},
+			get treeNode() {
+				return _treeNode;
+			},
 		};
+		const _treeNode = treeNode.addChild(name || id, "Dialog", id);
 		return _dialog;
 	};
 	
-	function palettes(game) {
+	function palettes(game, treeNode) {
 		const _list = [];
 		const _game = game;
+		const _treeNode = treeNode.addChild("Palettes", "Palettes", 0);
 		
 		const _palettes = {
 			add: function(id, name, colors) {
-				const _palette = palette(id, name, colors, _game);
+				const _palette = palette(id, name, colors, _game, _treeNode);
 				_list.push(_palette);
 				return _palette;
 			},
@@ -214,7 +227,7 @@
 		return _palettes;
 	};
 	
-	function palette(id, name, colors, game) {
+	function palette(id, name, colors, game, treeNode) {
 		const _game = game;
 		const _palette = {
 			id: id,
@@ -223,17 +236,22 @@
 			get game() {
 				return _game;
 			},
+			get treeNode() {
+				return _treeNode;
+			},
 		}
+		const _treeNode = treeNode.addChild(name || id, "Palette", id);
 		return _palette;
 	};
 	
-	function tiles(game) {
+	function tiles(game, treeNode) {
 		const _list = [];
 		const _game = game;
+		const _treeNode = treeNode.addChild("Tiles", "Tiles", 0);
 		
 		const _tiles = {
 			add: function(tileData) {
-				const _tile = tile(tileData, game);
+				const _tile = tile(tileData, game, _treeNode);
 				_list.push(_tile);
 				return _tile;
 			},
@@ -254,7 +272,7 @@
 		return _tiles;
 	};
 	
-	function tile(tileData, game) {
+	function tile(tileData, game, treeNode) {
 		const _game = game;
 		const _tile = { 
 			id: tileData.id,
@@ -269,18 +287,22 @@
 			get game() {
 				return _game;
 			},
+			get treeNode() {
+				return _treeNode;
+			},
 		};
-		
+		const _treeNode = treeNode.addChild(_tile.name || _tile.id, "Tile", _tile.id);
 		return _tile;
 	};
 	
-	function sprites(game) {
+	function sprites(game, treeNode) {
 		const _list = [];
 		const _game = game;
+		const _treeNode = treeNode.addChild("Sprites", "Sprites", 0);
 		
 		const _sprites = {
 			add: function(spriteData) {
-				const _sprite = sprite(spriteData, game);
+				const _sprite = sprite(spriteData, game, _treeNode);
 				_list.push(_sprite);
 				return _sprite;
 			},
@@ -301,7 +323,7 @@
 		return _sprites;
 	};
 	
-	function sprite(spriteData, game) {
+	function sprite(spriteData, game, treeNode) {
 		const _game = game;
 		const _sprite = {
 			id: spriteData.id,
@@ -321,18 +343,23 @@
 			get game() {
 				return _game;
 			},
+			get treeNode() {
+				return _treeNode;
+			},
 		};
+		const _treeNode = treeNode.addChild(_sprite.name || _sprite.id, "Sprite", _sprite.id);
 		
 		return _sprite;
 	};
 
-	function items(game) {
+	function items(game, treeNode) {
 		const _list = [];
 		const _game = game;
+		const _treeNode = treeNode.addChild("Items", "Items", 0);
 		
 		const _items = {
 			add: function(itemData) {
-				const _item = item(itemData, game);
+				const _item = item(itemData, game, _treeNode);
 				_list.push(_item);
 				return _item;
 			},
@@ -353,7 +380,7 @@
 		return _items;
 	};
 	
-	function item(itemData, game) {
+	function item(itemData, game, treeNode) {
 		const _game = game;
 		const _item = {
 			id: itemData.id,
@@ -369,19 +396,24 @@
 			get game() {
 				return _game;
 			},
+			get treeNode() {
+				return _treeNode;
+			},
 		};
+		const _treeNode = treeNode.addChild(_item.name || _item.id, "Item", _item.id);
 		
 		return _item;
 	};
 	
-	function exits(room) {
+	function exits(room, treeNode) {
 		const _list = [];
 		const _room = room;
+		const _treeNode = treeNode.addChild("Exits", "Exits", 0);
 		var _idGen = 0;
 		
 		const _exits = {
 			add: function(exitData) {
-				const _exit = exit(exitData, room, _idGen++);
+				const _exit = exit(exitData, room, _idGen++, _treeNode);
 				_list.push(_exit);
 				return _exit;
 			},
@@ -402,7 +434,7 @@
 		return _exits;
 	}
 	
-	function exit(exitData, room, id) {
+	function exit(exitData, room, id, treeNode) {
 		const _room = room;
 		const _exit = {
 			id: id,
@@ -417,19 +449,23 @@
 			get label() {
 				return _exit.id + " (" + _exit.x + "," + _exit.y + ")";
 			},
+			get treeNode() {
+				return _treeNode;
+			},
 		};
-		
+		const _treeNode = treeNode.addChild(_exit.label, "Exit", _exit.id);
 		return _exit;
 	}
 	
-	function ends(room) {
+	function ends(room, treeNode) {
 		const _list = [];
 		const _room = room;
+		const _treeNode = treeNode.addChild("Endings", "Endings", 0);
 		var _idGen = 0;
 		
 		const _ends = {
 			add: function(endData) {
-				const _end = end(endData, room, _idGen++);
+				const _end = end(endData, room, _idGen++, _treeNode);
 				_list.push(_end);
 				return _end;
 			},
@@ -451,7 +487,7 @@
 		return _ends;
 	}
 	
-	function end(endData, room, id) {
+	function end(endData, room, id, treeNode) {
 		const _room = room;
 		const _end = {
 			id: id,
@@ -464,18 +500,22 @@
 			get label() {
 				return _end.id + " (" + _end.x + "," + _end.y + ")";
 			},
+			get treeNode() {
+				return _treeNode;
+			},
 		};
-		
+		const _treeNode = treeNode.addChild(_end.label, "Ending", _end.id);
 		return _end;
 	}
 	
-	function rooms(game) {
+	function rooms(game, treeNode) {
 		const _list = [];
 		const _game = game;
+		const _treeNode = treeNode.addChild("Rooms", "Rooms", 0);
 		
 		const _rooms = {
 			add: function(roomData) {
-				const _room = room(roomData, game);
+				const _room = room(roomData, game, _treeNode);
 				_list.push(_room);
 				return _room;
 			},
@@ -496,7 +536,7 @@
 		return _rooms;
 	}
 	
-	function room(roomData, game) {
+	function room(roomData, game, treeNode) {
 		const _game = game;
 		const _room = {
 			id: roomData.id,
@@ -515,12 +555,16 @@
 			get game() {
 				return _game;
 			},
+			get treeNode() {
+				return _treeNode;
+			},
 		};
-		const _exits = exits(_room);
+		const _treeNode = treeNode.addChild(_room.name || _room.id, "Room", _room.id);
+		const _exits = exits(_room, _treeNode);
 		for (let i = 0; i < roomData.exits.length; i++) {
 			_exits.add(roomData.exits[i])
 		}
-		const _ends = ends(_room);
+		const _ends = ends(_room, _treeNode);
 		for (let i = 0; i < roomData.ends.length; i++) {
 			_ends.add(roomData.ends[i]);
 		}
@@ -528,13 +572,14 @@
 		return _room;
 	}
 	
-	function variables(game) {
+	function variables(game, treeNode) {
 		const _list = [];
 		const _game = game;
+		const _treeNode = treeNode.addChild("Variables", "Variables", 0);
 		
 		const _variables = {
 			add: function(id, value) {
-				const _variable = variable(id, value, game);
+				const _variable = variable(id, value, game, _treeNode);
 				_list.push(_variable);
 				return _variable;
 			},
@@ -555,7 +600,7 @@
 		return _variables;
 	}
 	
-	function variable(id, value, game) {
+	function variable(id, value, game, treeNode) {
 		const _game = game;
 		const _variable = {
 			id: id,
@@ -563,18 +608,22 @@
 			get game() {
 				return _game;
 			},
+			get treeNode() {
+				return _treeNode;
+			},
 		};
-		
+		const _treeNode = treeNode.addChild(id, "Variable", id);
 		return _variable;
 	}
 	
-	function fonts(game) {
+	function fonts(game, treeNode) {
 		const _list = [];
 		const _game = game;
+		const _treeNode = treeNode.addChild("Fonts", "Fonts", 0);
 		
 		const _fonts = {
 			add: function(id, data) {
-				const _font = font(id, data, game);
+				const _font = font(id, data, game, _treeNode);
 				_list.push(_font);
 				return _font;
 			},
@@ -595,7 +644,7 @@
 		return _fonts;
 	}
 	
-	function font(id, data, game) {
+	function font(id, data, game, treeNode) {
 		const _game = game;
 		const _font = {
 			id: id,
@@ -603,18 +652,23 @@
 			get game() {
 				return _game;
 			},
+			get treeNode() {
+				return _treeNode;
+			},
 		};
+		const _treeNode = treeNode.addChild(id, "Font", id);
 		
 		return _font;
 	}
 	
-	function tunes(game) {
+	function tunes(game, treeNode) {
 		const _list = [];
 		const _game = game;
+		const _treeNode = treeNode.addChild("Tunes", "Tunes", 0);
 		
 		const _tunes = {
 			add: function(id, data) {
-				const _tune = tune(id, data, game);
+				const _tune = tune(id, data, game, _treeNode);
 				_list.push(_tune);
 				return _tune;
 			},
@@ -635,7 +689,7 @@
 		return _tunes;
 	}
 	
-	function tune(id, data, game) {
+	function tune(id, data, game, treeNode) {
 		const _game = game;
 		const _tune = {
 			id: id,
@@ -643,18 +697,23 @@
 			get game() {
 				return _game;
 			},
+			get treeNode() {
+				return _treeNode;
+			},
 		};
+		const _treeNode = treeNode.addChild(id, "Tune", id);
 		
 		return _tune;
 	}
 	
-	function blips(game) {
+	function blips(game, treeNode) {
 		const _list = [];
 		const _game = game;
+		const _treeNode = treeNode.addChild("Blips", "Blips", 0);
 		
 		const _blips = {
 			add: function(id, data) {
-				const _blip = blip(id, data, game);
+				const _blip = blip(id, data, game, _treeNode);
 				_list.push(_blip);
 				return _blip;
 			},
@@ -675,7 +734,7 @@
 		return _blips;
 	}
 	
-	function blip(id, data, game) {
+	function blip(id, data, game, treeNode) {
 		const _game = game;
 		const _blip = {
 			id: id,
@@ -683,7 +742,11 @@
 			get game() {
 				return _game;
 			},
+			get treeNode() {
+				return _treeNode;
+			},
 		};
+		const _treeNode = treeNode.addChild(id, "Blip", id);
 		
 		return _blip;
 	}
