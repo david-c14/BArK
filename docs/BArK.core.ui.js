@@ -150,7 +150,6 @@
 		}
 		_currentTreeNode?.deselect();
 		treeNode.select();
-		_currentTreeNode = treeNode;
 	}
 	
 	function _wrapTreeNode(element, parent) {
@@ -163,8 +162,13 @@
 					const caret = element.querySelector("span");
 					caret.classList.add("caret");
 					caret.addEventListener("click", function() {
-						this.parentElement.querySelector(".nested").classList.toggle("active");
 						this.classList.toggle("caret-down");
+						if (this.classList.contains("caret-down")) {
+							this.parentElement.querySelector(".nested").classList.add("active");
+						}
+						else {
+							this.parentElement.querySelector(".nested").classList.remove("active");
+						}
 					});
 					list = window.document.createElement("UL");
 					list.classList.add("nested");
@@ -198,6 +202,7 @@
 				}
 				_currentTreeNode?.deselect();
 				element.classList.add("select");
+				_currentTreeNode = _treeNode;
 				core.ui.hooks.tree.run(_treeNode);
 			},
 			
@@ -232,6 +237,7 @@
 			
 			open: function() {
 				element.querySelector("span.caret")?.classList.add("caret-down");
+				element.querySelector(".nested").classList.add("active");
 				element.parentElement.classList.add("active");
 				if (_treeNode.parent != _treeNode.root) {
 					_treeNode.parent.open();
@@ -245,6 +251,7 @@
 			
 			close: function() {
 				element.querySelector("span").classList.remove("caret-down");
+				element.querySelector(".nested").classList.remove("active");
 				element.parentElement.classList.remove("active");
 			},
 			
