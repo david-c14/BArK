@@ -109,6 +109,8 @@
 			_div.innerHTML = "";
 			for(let i = 0; i < shape.frameList.length; i++) {
 				const _canvas = window.document.createElement("CANVAS");
+				_canvas.width = 128;
+				_canvas.height = 128;
 				_canvas.style.width = "128px";
 				_canvas.style.height = "128px";
 				_canvas.classList.add("list")
