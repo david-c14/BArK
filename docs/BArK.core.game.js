@@ -125,6 +125,7 @@
 			textDirection: null,
 			fontData: null,
 			textMode: "0",
+			doc: null,
 			
 		};
 		const _dialogs = dialogs(_game, _treeNode);

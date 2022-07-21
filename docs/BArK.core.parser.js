@@ -72,7 +72,8 @@
 		const doc = parser.parseFromString(text, "text/html");
 		const gameData = doc.getElementById("exportedGameData");
 		if (gameData) {
-			_parse(gameData.text.slice(1));
+			const game = _parse(gameData.text.slice(1));
+			game.doc = doc;
 			return;
 		}
 		_parse(text);
@@ -191,7 +192,7 @@
 		
 		const gameNode = game.treeNode;
 		gameNode.openAndSelect();
-		
+		return game;
 	}
 	
 	function _getType(line) {
