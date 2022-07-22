@@ -72,11 +72,10 @@
 		const doc = parser.parseFromString(text, "text/html");
 		const gameData = doc.getElementById("exportedGameData");
 		if (gameData) {
-			const game = _parse(gameData.text.slice(1));
-			game.doc = doc;
+			const game = _parse(gameData.text.slice(1), doc);
 			return;
 		}
-		_parse(text);
+		_parse(text, null);
 	}
 	
 	const _sym = {
@@ -100,7 +99,7 @@
 	const _width = _mapsize * _tilesize;
 	const _height = _mapsize * _tilesize;	
 	
-	function _parse(text) {
+	function _parse(text, htmlDoc) {
 		const gamesNode = core.ui.tree.find("Games");
 		const game = core.game.games.add(gamesNode);
 		var lines = text.split("\n");
@@ -190,6 +189,7 @@
 			}
 		}
 		
+		game.doc = htmlDoc;
 		const gameNode = game.treeNode;
 		gameNode.openAndSelect();
 		return game;

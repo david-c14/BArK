@@ -113,16 +113,28 @@ html {
 #BArK_container .button {
 	min-width: 80px;
 	height: 20px;
-	background-color: MediumBlue;
-	color: white;
+	background-color: #EEEEEE;
+	border: solid 1px #999999;
+	color: black;
 	display: inline-block;
 	margin: 3px;
 	padding-left: 3px;
 	padding-right: 3px;
 	text-align: center;
 	border-radius: 3px;
+	text-decoration: none;
 }
 
 #BArK_container .button:hover {
-	background-color: DodgerBlue;
+	color: DodgerBlue;
+}
+
+#BArK_toolbox > div {
+	margin: 2px;
+	border: solid 1px #999999;
+	padding: 3px;
+	text-align: center;
+	background-color: #EEEEEE;
+	border-radius: 5px;
+	
 }
