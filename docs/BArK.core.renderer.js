@@ -17,6 +17,7 @@
 	core.renderer.start = function(){
 		
 		core.renderer.drawFrame = _drawFrame;
+		core.renderer.drawRoom = _drawRoom;
 		
 		core.ui.hooks.tree.attach(function(context) {
 			if (context.type == "Module") {
