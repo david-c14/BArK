@@ -159,8 +159,20 @@
 		const _game = game;
 		const _treeNode = treeNode.addChild("Dialogs", "Dialogs", 0);
 		
+		function _getNextId() {
+			const _filteredList = _list.filter(function(a) { return (a.id != "title"); });
+			const _sortedList = _filteredList.sort(function(a,b) { return parseInt(b.id, 36) - parseInt(a.id, 36); });
+			if (_sortedList.length < 1) 
+				return "0";
+			let id = parseInt(_sortedList[0].id, 36);
+			id++;
+			return id.toString(36);
+		};
+
 		const _dialogs = {
 			add: function(id, src, name) {
+				if (id === null)
+					id = _getNextId();
 				const _dialog = dialog(id, src, name, _game, _treeNode);
 				_list.push(_dialog);
 				return _dialog;
