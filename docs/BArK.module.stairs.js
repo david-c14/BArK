@@ -24,6 +24,10 @@
 					_tool_stairway_1d(tool, node, context);
 					return "Add One-directional Stairway";
 				});
+				core.ui.toolbox.addTool("Two-directional Stairway", function(tool, node) {
+					_tool_stairway_2d(tool, node, context);
+					return "Add Two-directional Stairway";
+				});
 			}
 		});
 	};
@@ -36,10 +40,16 @@
 	function _tool_stairway_1d(tool, node, context) {
 		const _game = core.game.games.game(context.parent.parent.id);
 		const _room = _game.rooms.room(context.id);
-		const stairwayEditor = _stairwayEditor(node, _room);
+		const stairwayEditor = _stairwayEditor(node, _room, 1);
 	};
 	
-	function _stairwayEditor(node, room) {
+	function _tool_stairway_2d(tool, node, context) {
+		const _game = core.game.games.game(context.parent.parent.id);
+		const _room = _game.rooms.room(context.id);
+		const stairwayEditor = _stairwayEditor(node, _room, 2);
+	};
+	
+	function _stairwayEditor(node, room, dCount) {
 		const _palette = room.game.palettes.palette(room.pal);
 		
 		var startX = 7;
@@ -50,6 +60,12 @@
 		var xDiff = 1;
 		var yDiff = -1
 		_calcEnd();
+		var goFunc = _go_1;
+		
+		if (dCount === 2) {
+			goFunc = _go_2;
+		}
+			
 		
 		const _canvas = window.document.createElement("CANVAS");
 		_canvas.width = 256;
@@ -158,7 +174,7 @@
 		_goButton.innerText = "Make Stairs";
 		_goButton.classList.add("button");
 		_goButton.addEventListener("click", function() {
-			_go();
+			goFunc();
 		});
 		node.appendChild(_goButton);
 
@@ -326,7 +342,7 @@
 			_draw();
 		}
 		
-		function _go() {
+		function _go_1() {
 			const exitData = {
 				transition_effect: null,
 				dlg: null,
@@ -344,6 +360,68 @@
 				exitData.x -= xDiff;
 				exitData.y += yDiff;
 				room.exits.add(exitData);
+			}
+
+			const _message = window.document.createElement("DIV");
+			_message.innerText = "Stairs of length " + length + " added";
+			node.appendChild(_message);
+		}
+
+		function _go_2() {
+			const varId = room.game.variables.getNewName("stairs");
+			room.game.variables.add(varId, startY);
+			
+			const exitData = {
+				transition_effect: null,
+				dlg: null,
+			};
+			
+			for (i = 0; i < length; i++) {
+				const thisX = startX + xDiff * i;
+				const thisY = startY + yDiff * i;
+
+
+					let dialogSrc = '"""\n';
+					dialogSrc += '{\n';
+					dialogSrc += '  - ' + varId + ' == ' + thisY + ' ?\n';
+					dialogSrc += '    {exit "' + room.id + '" ' + (thisX + xDiff) + ' ' + (thisY + yDiff) + '}{' + varId + '=' + (thisY + yDiff) + '}\n';
+					dialogSrc += '  - else ?\n';
+					dialogSrc += '    {exit "' + room.id + '" ' + thisX + ' ' + thisY + '}{' + varId + '=' + thisY + '}\n';
+					dialogSrc += '}{property locked true}\n';
+					dialogSrc += '"""';
+					let dialog = room.game.dialogs.add(null, dialogSrc, varId + '_' + thisX + '_' + thisY);
+					
+
+				// exit on same level
+				{
+					let exitData = {
+						x: thisX + xDiff,
+						y: thisY,
+						dest: {
+							room: room.id,
+							x: thisX + xDiff,
+							y: thisY,
+						},
+						transition_effect: null,
+						dlg: dialog.id,
+					}
+					room.exits.add(exitData);
+				}
+				// exit on next level
+				{
+					let exitData = {
+						x: thisX,
+						y: thisY + yDiff,
+						dest: {
+							room: room.id,
+							x: thisX,
+							y: thisY + yDiff,
+						},
+						transition_effect: null,
+						dlg: dialog.id,
+					}
+					room.exits.add(exitData);
+				}
 			}
 
 			const _message = window.document.createElement("DIV");

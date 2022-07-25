@@ -609,6 +609,17 @@
 				return _variable;
 			},
 			
+			getNewName: function(stem) {
+				var id = stem;
+				var count = 1;
+				while (true) {
+					if (_listItem(_list, id) === null) {
+						return id;
+					}
+					id = stem + "_" + count++;
+				}
+			},
+			
 			get count() {
 				return _list.length;
 			},
