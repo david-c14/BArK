@@ -19,7 +19,7 @@
 			if (context.type == "GameList") {
 				core.ui.toolbox.addTool("Import Game", function(tool, node) {
 					_tool_import_game(tool, node);
-					return "Import Game : Paste or drag game here";
+					return "Import Game";
 				});
 			} else if (context.type == "Module") {
 				if (context.id == core.parser.name) {
@@ -38,6 +38,7 @@
 		const dropBox = window.document.createElement("TEXTAREA");
 		dropBox.style.height="100px";
 		dropBox.style.width="100%";
+		dropBox.placeholder = "Paste or drag game here";
 		dropBox.addEventListener("dragover", function(event) {
 			event.preventDefault();
 			event.stopPropagation();

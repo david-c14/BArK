@@ -75,6 +75,10 @@
 		_canvas.style.float = "left";
 		node.appendChild(_canvas);
 		
+		const _space1 = window.document.createElement("SPAN");
+		_space1.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+		node.appendChild(_space1);
+		
 		const _upButton = window.document.createElement("SPAN");
 		_upButton.innerText = "Move Up";
 		_upButton.classList.add("button");
@@ -102,6 +106,10 @@
 		node.appendChild(_rightButton);
 
 		node.appendChild(window.document.createElement("BR"));
+		
+		const _space2 = window.document.createElement("SPAN");
+		_space2.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+		node.appendChild(_space2);
 		
 		const _downButton = window.document.createElement("SPAN");
 		_downButton.innerText = "Move Down";
@@ -202,6 +210,8 @@
 			_context.fillStyle = "#FF0000";
 			_context.strokeStyle = "#FFFFFF";
 			_context.lineWidth = cellWidth * 0.2;
+			_context.lineCap = "round";
+			_context.lineJoin = "round";
 			
 			_context.beginPath();
 			_context.moveTo(sx, sy);
@@ -216,6 +226,29 @@
 			_context.closePath();
 			_context.fill();
 			_context.stroke();
+
+			_context.fillStyle = "#FFFF00";
+			_context.strokeStyle = "#000000";
+			_context.lineWidth = cellWidth * 0.1;
+			for (i = 0; i < room.exits.count; i++) {
+				const x = (room.exits.exit(i).x + 0.5) * cellWidth;
+				const y = (room.exits.exit(i).y + 0.5) * cellHeight;
+				_context.beginPath();
+				_context.moveTo(x - cellWidth * 0.4, y - cellHeight * 0.4);
+				_context.lineTo(x + cellWidth * 0.4, y - cellHeight * 0.4);
+				_context.lineTo(x + cellWidth * 0.4, y + cellHeight * 0.4);
+				_context.lineTo(x - cellWidth * 0.4, y + cellHeight * 0.4);
+				_context.lineTo(x - cellWidth * 0.4, y - cellHeight * 0.4);
+				_context.fill();
+				_context.lineTo(x + cellWidth * 0.4, y + cellHeight * 0.4);
+				_context.moveTo(x + cellWidth * 0.4, y - cellHeight * 0.4);
+				_context.lineTo(x - cellWidth * 0.4, y + cellHeight * 0.4);
+				_context.stroke();
+			}
+			_context.beginPath();
+			
+			
+			_clearDiv.innerText = "";
 		}
 		
 		function _calcEnd() {
@@ -342,7 +375,29 @@
 			_draw();
 		}
 		
+		function _checkForCollisions() {
+			for (i = 0; i < length; i++) {
+				const x = startX + xDiff * i;
+				const y = startY + yDiff * i;
+				for (j = 0; j < room.exits.count; j++) {
+					const roomX = room.exits.exit(j).x;
+					const roomY = room.exits.exit(j).y;
+					if ((x + xDiff == roomX) && (y == roomY)) {
+						_clearDiv.innerText = "There are existing exits in the way!";
+						return true;
+					}
+					if ((y + yDiff == roomY) && (x == roomX)) {
+						_clearDiv.innerText = "There are existing exits in the way!";
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		
 		function _go_1() {
+			if (_checkForCollisions()) 
+				return;
 			const exitData = {
 				transition_effect: null,
 				dlg: null,
@@ -361,13 +416,13 @@
 				exitData.y += yDiff;
 				room.exits.add(exitData);
 			}
-
-			const _message = window.document.createElement("DIV");
-			_message.innerText = "Stairs of length " + length + " added";
-			node.appendChild(_message);
+			_draw();
+			_clearDiv.innerText = "Stairs of length " + length + " added";
 		}
 
 		function _go_2() {
+			if (_checkForCollisions())
+				return;
 			const varId = room.game.variables.getNewName("stairs");
 			room.game.variables.add(varId, startY);
 			
@@ -423,10 +478,8 @@
 					room.exits.add(exitData);
 				}
 			}
-
-			const _message = window.document.createElement("DIV");
-			_message.innerText = "Stairs of length " + length + " added";
-			node.appendChild(_message);
+			_draw();
+			_clearDiv.innerText = "Stairs of length " + length + " added";
 		}
 
 		const _editor = {
