@@ -35,10 +35,29 @@
 	
 	function _tool_import_game(tool, node) {
 		
+		const fileBox = window.document.createElement("INPUT");
+		fileBox.type = "file";
+		fileBox.innerText = "Choose Game";
+		fileBox.addEventListener("change", function(e) {
+			const file = e.target.files[0];
+			const reader = new FileReader();
+			reader.addEventListener("load", function() {
+				_parseText(reader.result);
+			});
+			reader.addEventListener("error", function() {
+				window.alert(reader.error.message);
+			});
+			reader.readAsText(file);
+		});
+		node.appendChild(fileBox);
+		
+		node.appendChild(window.document.createElement("BR"));
+		node.appendChild(window.document.createElement("BR"));
+		
 		const dropBox = window.document.createElement("TEXTAREA");
 		dropBox.style.height="100px";
 		dropBox.style.width="100%";
-		dropBox.placeholder = "Paste or drag game here";
+		dropBox.placeholder = "... or paste or drag game here";
 		dropBox.addEventListener("dragover", function(event) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -53,7 +72,7 @@
 			}
 			const reader = new FileReader();
 			reader.addEventListener("load", function() {
-				_parseText(reader.result, dropBox);
+				_parseText(reader.result);
 			});
 			reader.addEventListener("error", function() {
 				window.alert(reader.error.message);
@@ -68,7 +87,7 @@
 		node.appendChild(dropBox);
 	}
 	
-	function _parseText(text, dropBox) {
+	function _parseText(text) {
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(text, "text/html");
 		const gameData = doc.getElementById("exportedGameData");
