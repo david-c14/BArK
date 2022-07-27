@@ -70,12 +70,24 @@
 		
 		var _selectedIndex = -1;
 		
+		const _div = window.document.createElement("DIV");
+		_div.style.width="170px";
+		_div.style.height="400px";
+		_div.style.overflowY = "scroll";
+		_div.style.marginLeft = "5px";
+		_div.style.marginTop = "5px";
+		_div.style.float = "left";
+		node.appendChild(_div);
+		_fillList();
+		
 		const _addButton = window.document.createElement("SPAN");
 		_addButton.innerText = "Add Frame";
 		_addButton.classList.add("button");
 		_addButton.addEventListener("click", function() { _addFrame();
 		});
 		node.appendChild(_addButton);
+		
+		node.appendChild(window.document.createElement("BR"));
 
 		const _delButton = window.document.createElement("SPAN");
 		_delButton.innerText = "Remove Frame";
@@ -84,12 +96,16 @@
 		});
 		node.appendChild(_delButton);
 
+		node.appendChild(window.document.createElement("BR"));
+
 		const _upButton = window.document.createElement("SPAN");
 		_upButton.innerText = "Move Frame Up";
 		_upButton.classList.add("button");
 		_upButton.addEventListener("click", function() { _moveUpFrame();
 		});
 		node.appendChild(_upButton);
+
+		node.appendChild(window.document.createElement("BR"));
 
 		const _downButton = window.document.createElement("SPAN");
 		_downButton.innerText = "Move Frame Down";
@@ -98,14 +114,9 @@
 		});
 		node.appendChild(_downButton);
 		
-		const _div = window.document.createElement("DIV");
-		_div.style.width="170px";
-		_div.style.height="400px";
-		_div.style.overflowY = "scroll";
-		_div.style.marginLeft = "5px";
-		_div.style.marginTop = "5px";
-		node.appendChild(_div);
-		_fillList();
+		const _clearDiv = window.document.createElement("DIV");
+		_clearDiv.style.clear = "both";
+		node.appendChild(_clearDiv);
 		
 		function _fillList() {
 			_div.innerHTML = "";
