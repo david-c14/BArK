@@ -74,6 +74,8 @@
 			return "rgb(" + bitsyColor + ")";
 		};
 		
+		core.ui.helpKey = _helpKey;
+		
 	};
 	
 	core.ui.start = function(){
@@ -114,8 +116,28 @@
 				if (viewerFunction) {
 					viewerFunction(_viewer, context);
 				}
+				else {
+					_defaultViewerFunction(_viewer, context);
+				}
 			}
 		};
+	}
+	
+	function _defaultViewerFunction(node, context) {
+		const _h1 = window.document.createElement("H1");
+		_h1.innerText = context.text;
+		_h1.style.textAlign = "center";
+		node.appendChild(_h1);
+		for (i = 0; i < context.count; i++) {
+			let _childNode = window.document.createElement("DIV");
+			let _childContext = context.child(i);
+			_childNode.innerText = _childContext.text;
+			_childNode.classList.add("listItem");
+			_childNode.addEventListener("click", function() {
+				_childContext.openAndSelect();
+			});
+			node.appendChild(_childNode);
+		}
 	}
 	
 	var _performanceOrigin = null;
@@ -237,7 +259,7 @@
 			
 			open: function() {
 				element.querySelector("span.caret")?.classList.add("caret-down");
-				element.querySelector(".nested").classList.add("active");
+				element.querySelector(".nested")?.classList.add("active");
 				element.parentElement.classList.add("active");
 				if (_treeNode.parent != _treeNode.root) {
 					_treeNode.parent.open();
@@ -469,6 +491,15 @@
 	
 	function _setToolName(name) {
 		_tool.parentElement.setAttribute("data-name", name);
+	}
+	
+	function _helpKey(tag) {
+		const _help = window.document.createElement("A");
+		_help.href = "https://github.com/david-c14/BArK/wiki/help_" + tag;
+		_help.target = "_blank";
+		_help.classList.add("help");
+		_help.innerText = "?";
+		_toolContainer.appendChild(_help);
 	}
 
 })();

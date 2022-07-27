@@ -66,6 +66,8 @@
 	};
 	
 	function frameAnimator(node, shape) {
+		core.ui.helpKey("module_shapes_editAnimation");
+		
 		var _selectedIndex = -1;
 		
 		const _addButton = window.document.createElement("SPAN");

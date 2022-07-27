@@ -45,6 +45,8 @@
 	};
 	
 	function _tool_game_data(tool, node, context) {
+		core.ui.helpKey("core_writer_gameData");
+		
 		const textArea = window.document.createElement("TEXTAREA");
 		textArea.style.height="400px";
 		textArea.style.width="100%";
@@ -79,6 +81,7 @@
 	};
 	
 	function _tool_game_file(tool, node, context) {
+		core.ui.helpKey("core_writer_gameFile");
 
 		const game = core.game.games.game(context.id);
 		const text = _write(game);
@@ -107,6 +110,7 @@
 	};
 	
 	function _tool_game_preview(tool, node, context) {
+		core.ui.helpKey("core_writer_previewGame");
 
 		const game = core.game.games.game(context.id);
 		const text = _write(game);
@@ -130,10 +134,10 @@
 	function _write(game) {
 		var _text = game.title;
 		_text += "\n\n";
-		_text += "# BITSY VERSION 8.0";
+		_text += "# BITSY VERSION 8.1";
 		_text += "\n\n";
 		_text += "! VER_MAJ 8\n";
-		_text += "! VER_MAJ 0\n";
+		_text += "! VER_MAJ 1\n";
 		_text += "! ROOM_FORMAT 1\n";
 		_text += "! DLG_COMPAT 0\n";
 		

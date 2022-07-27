@@ -34,14 +34,30 @@ html {
 #BArK_container > div > div {
 	min-width: 300px;
 	border: solid 1px black;
-	min-height: 40px;
+	min-height: 50px;
 	margin: 10px;
 	background-color: white;
+	position: relative;
 }
 
 /* component */
 #BArK_container > div > div > * {
 	margin: 3px;
+}
+
+#BArK_container .help {
+	position: absolute;
+	width: 15px;
+	height: 15px;
+	top: -2px;
+	right: -2px;
+	background-color: DodgerBlue;
+	color: white;
+	text-align: center;
+	font-weight: 600;
+	text-decoration: none;
+	border-radius: 8px;
+	border: solid 1px white;
 }
 
 /* 2nd Column */
@@ -137,4 +153,12 @@ html {
 	background-color: #EEEEEE;
 	border-radius: 5px;
 	
+}
+
+#BArK_container .listItem {
+	margin-left: 10px;
+}
+
+#BArK_container .listItem:hover {
+	color: DodgerBlue;
 }

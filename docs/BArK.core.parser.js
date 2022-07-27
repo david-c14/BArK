@@ -35,6 +35,8 @@
 	
 	function _tool_import_game(tool, node) {
 		
+		core.ui.helpKey("core_parser_importGame");
+		
 		const fileBox = window.document.createElement("INPUT");
 		fileBox.type = "file";
 		fileBox.innerText = "Choose Game";

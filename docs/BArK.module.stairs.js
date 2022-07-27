@@ -65,6 +65,8 @@
 		if (dCount === 2) {
 			goFunc = _go_2;
 		}
+		
+		core.ui.helpKey("module_stairs_stairway");
 			
 		
 		const _canvas = window.document.createElement("CANVAS");
